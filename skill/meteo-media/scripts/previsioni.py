@@ -244,7 +244,8 @@ def giornata(punti, giorno, dalle, alle, adesso, durata_min):
         dati.append({"nome": nome, "frazione": frazione, "ore": list(d.values())})
         if not ens_ok:
             note.append(f"ensemble non disponibile per {nome}: uso solo i modelli")
-    prima_ora = max(dalle, adesso.hour) if giorno == adesso.date() else dalle
+    # Partenze a ora piena: con minuti già trascorsi l'ora corrente è passata.
+    prima_ora = max(dalle, adesso.hour + (1 if adesso.minute else 0)) if giorno == adesso.date() else dalle
     ore = combina_ore(dati, prima_ora, alle)
     lista = partenze(dati, durata_min, prima_ora, alle)
     return ore, fasce(ore), lista, consiglio(lista), note
@@ -580,6 +581,9 @@ def main():
             intermedi = punti_intermedi(la, lo, lb, lob, km)
             punti += intermedi
             punti.append((corto(nome_b), lb, lob))
+            if punti[0][0] == punti[-1][0]:  # nomi uguali: i risultati per punto non devono collidere
+                punti[0] = (f"{punti[0][0]} (partenza)",) + tuple(punti[0][1:])
+                punti[-1] = (f"{punti[-1][0]} (arrivo)",) + tuple(punti[-1][1:])
             if alt_b:
                 note.append(f"Arrivo: {nome_b} (omonimi: {'; '.join(alt_b)})")
             if intermedi:

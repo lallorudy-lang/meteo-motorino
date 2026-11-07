@@ -37,7 +37,10 @@ export function oraLocale(fuso, quando = new Date()) {
 /** Ore di partenza di oggi: non si parte nel passato. adesso è "AAAA-MM-GGTHH:MM" nel fuso della partenza. */
 function primaOraDi(giorno, adesso, dalle) {
   if (!adesso || adesso.slice(0, 10) !== giorno) return dalle;
-  return Math.max(dalle, Number(adesso.slice(11, 13)));
+  // Le partenze si valutano a ora piena: se sono già passati dei minuti, l'ora corrente è passata.
+  const ora = Number(adesso.slice(11, 13));
+  const minuti = Number(adesso.slice(14, 16));
+  return Math.max(dalle, ora + (minuti > 0 ? 1 : 0));
 }
 
 /**
@@ -53,6 +56,9 @@ export async function calcolaPartenza(
   if (durata_min !== null && durata_min !== undefined && (durata_min < DURATA_MIN || durata_min > DURATA_MAX)) {
     throw new Error(`La durata deve essere tra ${DURATA_MIN} e ${DURATA_MAX} minuti`);
   }
+  if (adesso && giorno < adesso.slice(0, 10)) {
+    throw new Error("Le date richieste sono già passate: scegli oggi o un giorno successivo");
+  }
   const note = [];
   const fusoDa = da.fuso || (await fonti.orarioPunto(da.lat, da.lon, giorno)).fuso;
   let km = 0;
@@ -65,6 +71,11 @@ export async function calcolaPartenza(
     km = distanzaKm(da.lat, da.lon, a.lat, a.lon);
     const intermedi = puntiIntermedi(da.lat, da.lon, a.lat, a.lon, km);
     punti = [...punti, ...intermedi.map(([nome, lat, lon]) => ({ nome, lat, lon })), { nome: a.nome, lat: a.lat, lon: a.lon }];
+    // Nomi uguali (es. due "San Martino") farebbero collidere i risultati per punto: si distinguono qui.
+    if (punti[0].nome === punti[punti.length - 1].nome) {
+      punti[0] = { ...punti[0], nome: `${punti[0].nome} (partenza)` };
+      punti[punti.length - 1] = { ...punti[punti.length - 1], nome: `${a.nome} (arrivo)` };
+    }
     if (intermedi.length) note.push("Punti intermedi in linea d'aria, non lungo la strada: sono indicativi");
   }
   const durata = durata_min ?? (a ? durataStimata(km) : 0);
@@ -155,7 +166,10 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
   // Il luogo scelto (anche tra omonimi) resta in memoria, finché il testo non viene cambiato a mano.
   const scelti = { da: null, a: null };
   for (const [chiave, input] of [["da", da.input], ["a", a.input]]) {
-    input.addEventListener("input", () => { scelti[chiave] = null; });
+    input.addEventListener("input", () => {
+      scelti[chiave] = null;
+      input.closest(".campo").querySelector(".omonimi")?.remove();
+    });
   }
 
   async function risolvi(chiave, input, etichetta) {
@@ -186,7 +200,9 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
   }
 
   // Un preferito scelto o la posizione dal dispositivo compilano il form e calcolano subito.
+  const togliOmonimi = () => form.querySelectorAll(".omonimi").forEach((s) => s.remove());
   document.addEventListener("preferito-scelto", (ev) => {
+    togliOmonimi();
     const p = ev.detail;
     da.input.value = p.da.nome; scelti.da = p.da;
     a.input.value = p.a ? p.a.nome : ""; scelti.a = p.a || null;
@@ -194,6 +210,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     form.requestSubmit();
   });
   document.addEventListener("posizione", (ev) => {
+    togliOmonimi();
     da.input.value = ev.detail.nome; scelti.da = ev.detail;
     a.input.focus();
   });

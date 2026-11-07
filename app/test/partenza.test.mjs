@@ -89,3 +89,31 @@ test("partenza e arrivo con fusi diversi sono rifiutati", async () => {
     /hanno fusi orari diversi/,
   );
 });
+
+test("alle 12:45 non si consiglia la partenza delle 12:00 (F1)", async () => {
+  const r = await calcolaPartenza(
+    { da: TORINO, a: null, giorno: "2026-11-09", durata_min: null, dalle: 6, alle: 13, adesso: "2026-11-09T12:45" },
+    fontiBuone("2026-11-09"),
+  );
+  assert.deepEqual(r.partenze, []);
+  assert.ok(r.note.includes("Nessun orario rimasto oggi"));
+});
+
+test("una data già passata viene rifiutata prima del download (F2)", async () => {
+  await assert.rejects(
+    calcolaPartenza({ da: TORINO, a: null, giorno: "2026-11-09", durata_min: null, adesso: "2026-11-10T12:45" }, fontiBuone("2026-11-09")),
+    /Le date richieste sono già passate/,
+  );
+});
+
+test("con partenza e arrivo entrambi 'San Martino' i due punti restano distinti (F4)", async () => {
+  const sm = luogo("San Martino", 45.5, 8.0);
+  const sm2 = luogo("San Martino", 46.0, 9.0);
+  const r = await calcolaPartenza(
+    { da: sm, a: sm2, giorno: "2026-11-09", durata_min: 60, adesso: "2026-11-08T10:00" },
+    fontiBuone("2026-11-09"),
+  );
+  const nomi = r.punti.map((p) => p.nome);
+  assert.equal(new Set(nomi).size, nomi.length, nomi.join(" | "));
+  assert.equal(Object.keys(r.ore[0].livelli).length, nomi.length);
+});

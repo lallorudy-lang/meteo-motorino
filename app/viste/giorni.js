@@ -79,7 +79,10 @@ export function montaGiorni(contenitore, { cerca = cercaLuogoVero, fonti = { gio
   contenitore.append(form, box);
 
   let scelto = null;
-  cittaInput.addEventListener("input", () => { scelto = null; });
+  cittaInput.addEventListener("input", () => {
+    scelto = null;
+    form.querySelectorAll(".omonimi").forEach((s) => s.remove());
+  });
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
@@ -95,7 +98,7 @@ export function montaGiorni(contenitore, { cerca = cercaLuogoVero, fonti = { gio
           lista.setAttribute("aria-label", "Quale città?");
           italiani.forEach((l, i) => { const o = el("option", l.etichetta); o.value = String(i); lista.append(o); });
           lista.addEventListener("change", () => { scelto = italiani[Number(lista.value)]; });
-          cittaInput.closest(".campo, form").querySelector(".omonimi")?.remove();
+          form.querySelectorAll(".omonimi").forEach((s) => s.remove());
           form.insertBefore(lista, pulsante);
           scelto = italiani[0];
           messaggio.textContent = `Ci sono più città chiamate ${cittaInput.value.trim()}: scegli quella giusta in elenco, poi premi Mostra.`;
@@ -103,8 +106,10 @@ export function montaGiorni(contenitore, { cerca = cercaLuogoVero, fonti = { gio
         }
         scelto = trovati[0];
       }
+      // "Oggi" si ricalcola a ogni invio, nel fuso della città scelta.
+      const oggiCitta = oggiLocale(scelto.fuso || "Europe/Rome");
       const { righe, note } = await calcolaGiorni(
-        { luogo: scelto, dal: dalInput.value, al: alInput.value, oggi },
+        { luogo: scelto, dal: dalInput.value, al: alInput.value, oggi: oggiCitta },
         fonti,
       );
       messaggio.textContent = "";
