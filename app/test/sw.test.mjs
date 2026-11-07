@@ -102,7 +102,7 @@ test("una navigazione senza rete e non in cache ricade sull'app (F4)", async () 
   a.gestori.install({ waitUntil: (p) => { attesa = p; } });
   await attesa;
   let risposta;
-  a.gestori.fetch({ request: { url: `${ORIGINE}/app/pagina-che-non-esiste.html`, method: "GET", mode: "navigate" }, respondWith: (p) => { risposta = p; } });
+  a.gestori.fetch({ request: { url: `${ORIGINE}/app/`, method: "GET", mode: "navigate" }, respondWith: (p) => { risposta = p; } });
   assert.equal(await (await risposta).text(), "cache");
 });
 
@@ -121,3 +121,14 @@ test("le richieste non GET non vengono intercettate", () => {
   assert.equal(intercettata, false);
 });
 
+
+test("una pagina annidata senza rete non ricade sull'app, che si risolverebbe male (F4)", async () => {
+  const a = ambiente({ rete: async () => { throw new TypeError("offline"); } });
+  let attesa;
+  a.gestori.install({ waitUntil: (p) => { attesa = p; } });
+  await attesa;
+  let risposta;
+  a.gestori.fetch({ request: { url: `${ORIGINE}/app/sottocartella/pagina`, method: "GET", mode: "navigate" }, respondWith: (p) => { risposta = p; } });
+  const r = await risposta;
+  assert.equal(r.type, "error");
+});

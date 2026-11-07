@@ -47,25 +47,36 @@ export function leggiUltimo(archivio) {
   }
 }
 
-/** Giorno (AAAA-MM-GG) e ora intera di un istante nel fuso indicato. */
+/** Giorno (AAAA-MM-GG), ora e minuti di un istante nel fuso indicato. */
 export function oraNelFuso(ms, fuso = "Europe/Rome") {
   const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
-    timeZone: fuso, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+    timeZone: fuso, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", minute: "2-digit", hourCycle: "h23",
   }).formatToParts(new Date(ms)).map((x) => [x.type, x.value]));
-  return { giorno: `${p.year}-${p.month}-${p.day}`, ora: Number(p.hour) };
+  return { giorno: `${p.year}-${p.month}-${p.day}`, ora: Number(p.hour), minuti: Number(p.minute) };
+}
+
+/**
+ * Partenze consigliate ancora possibili. Le partenze sono a ora piena: dalle..(alle-1).
+ * Con minuti già trascorsi l'ora corrente è passata. Restituisce {dalle, alle} oppure null.
+ */
+export function partenzeRimaste(consiglio, ora, minuti) {
+  if (!consiglio || !consiglio.consigliabile) return null;
+  const primaValida = Math.max(consiglio.dalle, ora + (minuti > 0 ? 1 : 0));
+  return primaValida <= consiglio.alle - 1 ? { dalle: primaValida, alle: consiglio.alle } : null;
 }
 
 /**
  * Stato dell'ultimo risultato salvato (spec §5.1):
- * - "storico": il giorno è passato, oppure la fascia consigliata di oggi è già finita. Nessun consiglio.
- * - "vecchio": la fascia è ancora valida ma i dati sono più vecchi di 3 ore: invito ad aggiornare.
- * - "attuale": fascia valida e dati freschi.
+ * - "storico": il giorno è passato, o non resta nessuna partenza consigliata. Nessun consiglio.
+ * - "vecchio": restano partenze consigliate ma i dati sono più vecchi di 3 ore.
+ * - "attuale": restano partenze consigliate e dati freschi.
+ * In tutti i casi con partenze: rimaste dice quali orari sono ancora validi.
  */
 export function statoUltimo(u, adessoMs = Date.now()) {
   const ora = oraNelFuso(adessoMs, u.fuso);
-  const c = u.consiglio;
-  const fasciaFinita = c && c.consigliabile && u.giorno === ora.giorno && c.alle <= ora.ora;
-  if (u.giorno < ora.giorno || fasciaFinita) return { tipo: "storico" };
+  if (u.giorno < ora.giorno) return { tipo: "storico" };
+  const rimaste = u.giorno === ora.giorno ? partenzeRimaste(u.consiglio, ora.ora, ora.minuti) : (u.consiglio?.consigliabile ? { dalle: u.consiglio.dalle, alle: u.consiglio.alle } : null);
+  if (u.giorno === ora.giorno && u.consiglio?.consigliabile && !rimaste) return { tipo: "storico" };
   const f = valutaFreschezza(u.acquisito_ms, adessoMs, LIMITI_MIN.previsioni);
-  return { tipo: f.attuale ? "attuale" : "vecchio", minuti: f.minuti };
+  return { tipo: f.attuale ? "attuale" : "vecchio", minuti: f.minuti, rimaste };
 }

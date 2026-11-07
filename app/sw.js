@@ -8,6 +8,8 @@ const GUSCIO = [
   "icona-192.png", "icona-512.png",
 ];
 const GUSCIO_ASSOLUTI = new Set(GUSCIO.map((p) => new URL(p, self.location).href));
+const RADICE = new URL("./", self.location).pathname;
+const PAGINA_INGRESSO = new Set([RADICE, RADICE + "index.html"]);
 
 self.addEventListener("install", (evento) => {
   evento.waitUntil(caches.open(VERSIONE).then((c) => c.addAll(GUSCIO)));
@@ -36,7 +38,9 @@ async function retePoiCache(richiesta, navigazione) {
   } catch {
     const salvata = await caches.match(richiesta);
     if (salvata) return salvata;
-    if (navigazione) {
+    // Il ripiego sull'app vale solo per la pagina d'ingresso: una pagina annidata caricherebbe
+    // stile e script dalla cartella sbagliata, e l'app non partirebbe.
+    if (navigazione && PAGINA_INGRESSO.has(new URL(richiesta.url).pathname)) {
       const app = await caches.match(new URL("./index.html", self.location).href);
       if (app) return app;
     }

@@ -65,3 +65,21 @@ test("un risultato con fascia ancora valida ma dati di più di 3 ore fa chiede d
   const s = statoUltimo(base("2026-11-08", 11, 14, 4), ADESSO);
   assert.equal(s.tipo, "vecchio");
 });
+
+import { partenzeRimaste } from "../freschezza.js";
+
+test("alle 14:30 la partenza delle 14:00 è passata: la fascia 14-15 è finita (F2)", () => {
+  const adesso = Date.parse("2026-11-08T13:30:00Z"); // 14:30 a Roma
+  const s = statoUltimo(base("2026-11-08", 14, 15, 0), adesso);
+  assert.equal(s.tipo, "storico");
+});
+
+test("alle 13:30 nella fascia 11-15 restano le partenze dalle 14:00 alle 14:00", () => {
+  const r = partenzeRimaste({ consigliabile: true, dalle: 11, alle: 15 }, 13, 30);
+  assert.deepEqual(r, { dalle: 14, alle: 15 });
+});
+
+test("a 14:00 esatte la partenza delle 14:00 è ancora valida", () => {
+  const r = partenzeRimaste({ consigliabile: true, dalle: 14, alle: 15 }, 14, 0);
+  assert.deepEqual(r, { dalle: 14, alle: 15 });
+});

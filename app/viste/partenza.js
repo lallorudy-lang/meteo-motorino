@@ -7,7 +7,7 @@ import {
 } from "../motore.js";
 import { creaMappa } from "./mappa.js";
 import { salva, leggi } from "../preferiti.js";
-import { leggiUltimo, salvaUltimo, etichettaDataOra, statoUltimo } from "../freschezza.js";
+import { leggiUltimo, salvaUltimo, etichettaDataOra, statoUltimo, oraNelFuso } from "../freschezza.js";
 
 const DURATA_MIN = 5;
 const DURATA_MAX = 600;
@@ -260,19 +260,26 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     if (!u) return;
     const stato = statoUltimo(u, Date.now());
     const c = u.consiglio;
-    const fascia = c && c.consigliabile ? `tra le ${fmt(c.dalle)}:00 e le ${fmt(c.alle - 1)}:00` : "nessun orario davvero buono";
     const punti = u.punti.join(" → ");
     const quando = `${etichettaDataOra(u.acquisito_ms, u.fuso)} (${u.fuso})`;
+    const giornoPrevisto = `${u.giorno.slice(8, 10)}/${u.giorno.slice(5, 7)}`;
+    const oggi = oraNelFuso(Date.now(), u.fuso).giorno;
+    const perGiorno = u.giorno === oggi ? "" : ` per il giorno ${giornoPrevisto}`;
     let testo, classe;
     if (stato.tipo === "storico") {
-      testo = `Storico del ${quando}, per il giorno ${u.giorno}: nessun consiglio attuale. Calcola di nuovo.`;
-      classe = "banner no";
-    } else if (stato.tipo === "vecchio") {
-      testo = `Dati di ${Math.round(stato.minuti / 60)} ore fa: aggiorna prima di partire. Ultimo consiglio: ${fascia} (${punti}).`;
+      testo = `Storico del ${quando}${perGiorno}: nessun consiglio attuale. Calcola di nuovo.`;
       classe = "banner no";
     } else {
-      testo = `Ultimo risultato, aggiornato ${stato.minuti} min fa: ${fascia} (${punti}).`;
-      classe = "banner";
+      const fascia = stato.rimaste
+        ? (stato.rimaste.dalle === stato.rimaste.alle - 1 ? `alle ${fmt(stato.rimaste.dalle)}:00` : `tra le ${fmt(stato.rimaste.dalle)}:00 e le ${fmt(stato.rimaste.alle - 1)}:00`)
+        : (c && c.consigliabile ? "" : "nessun orario davvero buono");
+      if (stato.tipo === "vecchio") {
+        testo = `Dati di ${Math.round(stato.minuti / 60)} ore fa${perGiorno}: aggiorna prima di partire. Ultimo consiglio: ${fascia} (${punti}).`;
+        classe = "banner no";
+      } else {
+        testo = `Ultimo risultato, aggiornato ${stato.minuti} min fa${perGiorno}: ${fascia} (${punti}).`;
+        classe = "banner";
+      }
     }
     box.prepend(el("p", testo, classe));
   }
