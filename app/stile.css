@@ -70,3 +70,7 @@ table.dett td { padding: 1px 6px 1px 0; }
 .tabella-ore { border-collapse: collapse; width: 100%; font-size: 13px; background: #fff; margin-top: 10px; display: block; overflow-x: auto; }
 .tabella-ore th, .tabella-ore td { padding: 4px 6px; border-bottom: 1px solid var(--bordo); text-align: left; white-space: nowrap; }
 .risultato > * { margin-top: 10px; }
+
+/* Scheda Più giorni */
+#contenuto-giorni .partenza-form { grid-template-columns: 1fr; }
+#contenuto-giorni .tabella-ore td { white-space: normal; min-width: 90px; }

@@ -2,6 +2,7 @@
 // Le schede Partenza e Più giorni si montano nei passi 10 e 11.
 import { leggi, salva, togli, esporta, importa, cancellaDatiLocali } from "./preferiti.js";
 import { montaPartenza } from "./viste/partenza.js";
+import { montaGiorni } from "./viste/giorni.js";
 
 const CHIAVE_PRIVACY = "meteo-motorino.privacy-letta";
 const archivio = globalThis.localStorage;
@@ -121,4 +122,5 @@ collegaImpostazioni();
 disegnaPreferiti();
 document.addEventListener("preferito-salvato", disegnaPreferiti);
 montaPartenza(document.getElementById("contenuto-partenza"));
+montaGiorni(document.getElementById("contenuto-giorni"));
 apriScheda("partenza");
