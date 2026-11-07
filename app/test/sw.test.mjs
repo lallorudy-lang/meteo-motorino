@@ -19,9 +19,11 @@ function ambiente({ rete = async () => new Response("rete") } = {}) {
     const c = cache.get(nome);
     return {
       addAll: async (lista) => { aggiunti.push(...lista); for (const u of lista) c.set(new URL(u, ORIGINE + "/app/").href, new Response("cache")); },
+      put: async (r, risposta) => { c.set(typeof r === "string" ? r : r.url, risposta); },
     };
   };
   const sandbox = {
+    ...{},
     self: {
       location: new URL(ORIGINE + "/app/sw.js"),
       addEventListener: (tipo, f) => { gestori[tipo] = f; },
@@ -57,17 +59,51 @@ test("all'installazione mette in cache il guscio dell'app, non le API", async ()
   assert.ok(a.aggiunti.every((f) => !/api\.open-meteo|tile\.openstreetmap|^https?:/.test(f)), a.aggiunti.join(" "));
 });
 
-test("una risorsa in cache viene servita senza andare in rete", async () => {
-  let chiamate = 0;
-  const a = ambiente({ rete: async () => { chiamate++; return new Response("rete"); } });
+test("con la rete il guscio viene preso dalla rete e la cache si aggiorna (F1)", async () => {
+  const a = ambiente({ rete: async () => new Response("versione nuova") });
+  let risposta;
+  a.gestori.fetch({ request: richiesta(`${ORIGINE}/app/stile.css`), respondWith: (p) => { risposta = p; } });
+  assert.equal(await (await risposta).text(), "versione nuova");
+  const salvata = await a.cache.get("meteo-motorino-v2").get(`${ORIGINE}/app/stile.css`).text();
+  assert.equal(salvata, "versione nuova");
+});
+
+test("senza rete il guscio ricade sull'ultima versione in cache", async () => {
+  const a = ambiente({ rete: async () => { throw new TypeError("offline"); } });
   let attesa;
   a.gestori.install({ waitUntil: (p) => { attesa = p; } });
   await attesa;
   let risposta;
   a.gestori.fetch({ request: richiesta(`${ORIGINE}/app/stile.css`), respondWith: (p) => { risposta = p; } });
-  const r = await risposta;
-  assert.equal(await r.text(), "cache");
-  assert.equal(chiamate, 0);
+  assert.equal(await (await risposta).text(), "cache");
+});
+
+test("all'attivazione elimina solo le cache di Meteo Motorino vecchie (F3)", async () => {
+  const a = ambiente();
+  a.cache.set("meteo-motorino-v1", new Map());
+  a.cache.set("altra-app-v9", new Map());
+  let attesa;
+  a.gestori.activate({ waitUntil: (p) => { attesa = p; } });
+  await attesa;
+  assert.ok(!a.cache.has("meteo-motorino-v1"));
+  assert.ok(a.cache.has("altra-app-v9"));
+});
+
+test("una risorsa non del guscio (es. dati JSON dell'app) non viene intercettata (F4)", () => {
+  const a = ambiente();
+  let intercettata = false;
+  a.gestori.fetch({ request: richiesta(`${ORIGINE}/app/dati/esempio.json`), respondWith: () => { intercettata = true; } });
+  assert.equal(intercettata, false);
+});
+
+test("una navigazione senza rete e non in cache ricade sull'app (F4)", async () => {
+  const a = ambiente({ rete: async () => { throw new TypeError("offline"); } });
+  let attesa;
+  a.gestori.install({ waitUntil: (p) => { attesa = p; } });
+  await attesa;
+  let risposta;
+  a.gestori.fetch({ request: { url: `${ORIGINE}/app/pagina-che-non-esiste.html`, method: "GET", mode: "navigate" }, respondWith: (p) => { risposta = p; } });
+  assert.equal(await (await risposta).text(), "cache");
 });
 
 test("le richieste verso altri siti (API, cartina) non vengono intercettate", () => {
@@ -85,13 +121,3 @@ test("le richieste non GET non vengono intercettate", () => {
   assert.equal(intercettata, false);
 });
 
-test("senza rete una pagina non in cache ricade sull'app", async () => {
-  const a = ambiente({ rete: async () => { throw new TypeError("offline"); } });
-  let attesa;
-  a.gestori.install({ waitUntil: (p) => { attesa = p; } });
-  await attesa;
-  let risposta;
-  a.gestori.fetch({ request: richiesta(`${ORIGINE}/app/pagina-che-non-esiste.html`), respondWith: (p) => { risposta = p; } });
-  const r = await risposta;
-  assert.equal(await r.text(), "cache");
-});

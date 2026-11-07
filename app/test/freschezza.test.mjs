@@ -35,3 +35,33 @@ test("un ultimo risultato corrotto non rompe l'app", () => {
   const archivio = { getItem: () => "{ rotto", setItem() {}, removeItem() {} };
   assert.equal(leggiUltimo(archivio), null);
 });
+
+import { statoUltimo } from "../freschezza.js";
+
+// Ora di Roma: 2026-11-08 10:00 locale (09:00 UTC)
+const ADESSO = Date.parse("2026-11-08T09:00:00Z");
+const base = (giorno, dalle, alle, acquisitoOreFa) => ({
+  acquisito_ms: ADESSO - acquisitoOreFa * 3600000, fuso: "Europe/Rome", giorno,
+  punti: ["Torino", "Milano"], durata_min: 90,
+  consiglio: { consigliabile: true, dalle, alle, giudizio: "ok" },
+});
+
+test("un risultato di un giorno passato è storico, senza consiglio (F2)", () => {
+  const s = statoUltimo(base("2026-11-07", 12, 15, 0.5), ADESSO);
+  assert.equal(s.tipo, "storico");
+});
+
+test("un risultato di oggi la cui fascia è finita è storico (F2)", () => {
+  const s = statoUltimo(base("2026-11-08", 6, 9, 0.5), ADESSO); // alle 10:00 la fascia 6-9 è finita
+  assert.equal(s.tipo, "storico");
+});
+
+test("un risultato di oggi con fascia ancora valida e dati freschi è attuale", () => {
+  const s = statoUltimo(base("2026-11-08", 11, 14, 1), ADESSO);
+  assert.equal(s.tipo, "attuale");
+});
+
+test("un risultato con fascia ancora valida ma dati di più di 3 ore fa chiede di aggiornare", () => {
+  const s = statoUltimo(base("2026-11-08", 11, 14, 4), ADESSO);
+  assert.equal(s.tipo, "vecchio");
+});

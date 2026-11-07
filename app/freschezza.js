@@ -46,3 +46,26 @@ export function leggiUltimo(archivio) {
     return null;
   }
 }
+
+/** Giorno (AAAA-MM-GG) e ora intera di un istante nel fuso indicato. */
+export function oraNelFuso(ms, fuso = "Europe/Rome") {
+  const p = Object.fromEntries(new Intl.DateTimeFormat("en-CA", {
+    timeZone: fuso, year: "numeric", month: "2-digit", day: "2-digit", hour: "2-digit", hourCycle: "h23",
+  }).formatToParts(new Date(ms)).map((x) => [x.type, x.value]));
+  return { giorno: `${p.year}-${p.month}-${p.day}`, ora: Number(p.hour) };
+}
+
+/**
+ * Stato dell'ultimo risultato salvato (spec §5.1):
+ * - "storico": il giorno è passato, oppure la fascia consigliata di oggi è già finita. Nessun consiglio.
+ * - "vecchio": la fascia è ancora valida ma i dati sono più vecchi di 3 ore: invito ad aggiornare.
+ * - "attuale": fascia valida e dati freschi.
+ */
+export function statoUltimo(u, adessoMs = Date.now()) {
+  const ora = oraNelFuso(adessoMs, u.fuso);
+  const c = u.consiglio;
+  const fasciaFinita = c && c.consigliabile && u.giorno === ora.giorno && c.alle <= ora.ora;
+  if (u.giorno < ora.giorno || fasciaFinita) return { tipo: "storico" };
+  const f = valutaFreschezza(u.acquisito_ms, adessoMs, LIMITI_MIN.previsioni);
+  return { tipo: f.attuale ? "attuale" : "vecchio", minuti: f.minuti };
+}

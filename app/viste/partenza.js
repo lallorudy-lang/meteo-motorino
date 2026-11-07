@@ -7,7 +7,7 @@ import {
 } from "../motore.js";
 import { creaMappa } from "./mappa.js";
 import { salva, leggi } from "../preferiti.js";
-import { leggiUltimo, salvaUltimo, etichettaDataOra, valutaFreschezza, LIMITI_MIN } from "../freschezza.js";
+import { leggiUltimo, salvaUltimo, etichettaDataOra, statoUltimo } from "../freschezza.js";
 
 const DURATA_MIN = 5;
 const DURATA_MAX = 600;
@@ -254,18 +254,27 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     }
   });
 
-  /** Mostra l'ultimo risultato salvato, marcandolo come storico quando non è più attuale. */
+  /** Mostra l'ultimo risultato salvato, con il suo stato reale (spec §5.1). */
   function mostraStorico(box) {
     const u = leggiUltimo(ARCHIVIO());
     if (!u) return;
-    const f = valutaFreschezza(u.acquisito_ms, Date.now(), LIMITI_MIN.previsioni);
+    const stato = statoUltimo(u, Date.now());
     const c = u.consiglio;
-    const orario = c && c.consigliabile ? `tra le ${fmt(c.dalle)}:00 e le ${fmt(c.alle - 1)}:00` : "nessun orario davvero buono";
-    const testo = f.attuale
-      ? `Ultimo risultato, ${f.testo}: ${orario} (${u.punti.join(" → ")})`
-      : `Storico del ${etichettaDataOra(u.acquisito_ms, u.fuso)}: ${orario} (${u.punti.join(" → ")}). Calcola di nuovo prima di partire.`;
-    const p = el("p", testo, f.attuale ? "banner" : "banner no");
-    box.prepend(p);
+    const fascia = c && c.consigliabile ? `tra le ${fmt(c.dalle)}:00 e le ${fmt(c.alle - 1)}:00` : "nessun orario davvero buono";
+    const punti = u.punti.join(" → ");
+    const quando = `${etichettaDataOra(u.acquisito_ms, u.fuso)} (${u.fuso})`;
+    let testo, classe;
+    if (stato.tipo === "storico") {
+      testo = `Storico del ${quando}, per il giorno ${u.giorno}: nessun consiglio attuale. Calcola di nuovo.`;
+      classe = "banner no";
+    } else if (stato.tipo === "vecchio") {
+      testo = `Dati di ${Math.round(stato.minuti / 60)} ore fa: aggiorna prima di partire. Ultimo consiglio: ${fascia} (${punti}).`;
+      classe = "banner no";
+    } else {
+      testo = `Ultimo risultato, aggiornato ${stato.minuti} min fa: ${fascia} (${punti}).`;
+      classe = "banner";
+    }
+    box.prepend(el("p", testo, classe));
   }
 
   function disegna(r, box, { da: dl, a: al, durata: durataScritta }) {
