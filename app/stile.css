@@ -35,3 +35,24 @@ dialog::backdrop { background: #0006; }
 .link-utili ul { padding-left: 18px; }
 .link-utili a { color: var(--pio); }
 .senza-js { padding: 16px; }
+
+/* Mappa delle gocce (app/viste/mappa.js) */
+.mappa-area { height: 58vh; min-height: 320px; border-radius: 12px; box-shadow: 0 1px 4px #0002; background: #e5e7eb; overflow: hidden; }
+.mappa-area.senza-cartina { display: flex; align-items: center; justify-content: center; padding: 20px; text-align: center; color: var(--secondario); }
+.pin { position: relative; filter: drop-shadow(0 1px 2px #0005); }
+.pin .badge { position: absolute; right: -6px; top: -6px; font-size: 16px; }
+.leaflet-tooltip.etich { background: #fffe; border: 0; box-shadow: 0 1px 3px #0003; font-weight: 600; padding: 2px 6px; }
+table.dett { border-collapse: collapse; font-size: 13px; }
+table.dett td { padding: 1px 6px 1px 0; }
+.barra-ore { display: flex; gap: 3px; overflow-x: auto; margin-top: 12px; padding: 4px 2px 6px; }
+.barra-ore button { flex: 1 0 36px; min-width: 36px; height: 48px; border: 0; border-radius: 6px; cursor: pointer;
+  display: flex; flex-direction: column; align-items: center; justify-content: center; gap: 2px;
+  font: 600 12px/1.1 inherit; color: #fff; }
+.barra-ore button.l0 { background: var(--ok); }
+.barra-ore button.l1 { background: var(--ris); color: var(--testo); }
+.barra-ore button.l2 { background: var(--pio); }
+.barra-ore button.lnd { background: var(--nd); }
+.barra-ore button[aria-pressed="true"] { outline: 3px solid var(--testo); outline-offset: 2px; }
+.barra-ore button:focus-visible { outline: 3px solid #000; outline-offset: 2px; }
+.stato-ora { font-weight: 700; margin: 10px 0 0; }
+.nota-mappa { font-size: 13px; color: var(--secondario); margin: 6px 0 0; }
