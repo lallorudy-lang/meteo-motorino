@@ -1,0 +1,2645 @@
+[
+ {
+  "nome": "durata stimata 8 km: 21 minuti",
+  "funzione": "durata_stimata",
+  "argomenti": [
+   8
+  ],
+  "atteso": 21
+ },
+ {
+  "nome": "durata stimata 2 km: almeno 10 minuti",
+  "funzione": "durata_stimata",
+  "argomenti": [
+   2
+  ],
+  "atteso": 10
+ },
+ {
+  "nome": "durata stimata 125 km: 325 minuti",
+  "funzione": "durata_stimata",
+  "argomenti": [
+   125
+  ],
+  "atteso": 325
+ },
+ {
+  "nome": "partenze: un punto coincide con le ore",
+  "funzione": "partenze",
+  "argomenti": [
+   [
+    {
+     "nome": "Torino",
+     "frazione": 0,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    }
+   ],
+   20,
+   6,
+   9
+  ],
+  "atteso": [
+   {
+    "ora": 6,
+    "livello": 0,
+    "giudizio": "ok",
+    "raffiche_forti": false,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "prob_max": 5,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 6
+     }
+    ]
+   },
+   {
+    "ora": 7,
+    "livello": 0,
+    "giudizio": "ok",
+    "raffiche_forti": false,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "prob_max": 5,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 7
+     }
+    ]
+   },
+   {
+    "ora": 8,
+    "livello": 0,
+    "giudizio": "ok",
+    "raffiche_forti": false,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "prob_max": 5,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 8
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "nome": "partenze: arrivo piovoso alle 12 rende pioggia probabile la partenza delle 11",
+  "funzione": "partenze",
+  "argomenti": [
+   [
+    {
+     "nome": "Torino",
+     "frazione": 0,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    },
+    {
+     "nome": "Milano",
+     "frazione": 1,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 3.0,
+       "mm_max": 3.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 100,
+       "prob_intervallo": [
+        100,
+        100
+       ],
+       "ensemble_pct": 100,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    }
+   ],
+   60,
+   10,
+   13
+  ],
+  "atteso": [
+   {
+    "ora": 10,
+    "livello": 0,
+    "giudizio": "ok",
+    "raffiche_forti": false,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "prob_max": 5,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 10
+     },
+     {
+      "nome": "Milano",
+      "ora": 11
+     }
+    ]
+   },
+   {
+    "ora": 11,
+    "livello": 2,
+    "giudizio": "pioggia probabile",
+    "raffiche_forti": false,
+    "mm": 3.0,
+    "mm_max": 3.0,
+    "prob_max": 100,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 11
+     },
+     {
+      "nome": "Milano",
+      "ora": 12
+     }
+    ]
+   },
+   {
+    "ora": 12,
+    "livello": 2,
+    "giudizio": "pioggia probabile",
+    "raffiche_forti": false,
+    "mm": 3.0,
+    "mm_max": 3.0,
+    "prob_max": 100,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 12
+     },
+     {
+      "nome": "Milano",
+      "ora": 13
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "nome": "partenze: durata che porta oltre mezzanotte dà dati incompleti",
+  "funzione": "partenze",
+  "argomenti": [
+   [
+    {
+     "nome": "Torino",
+     "frazione": 0,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    },
+    {
+     "nome": "Milano",
+     "frazione": 1,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    }
+   ],
+   120,
+   23,
+   24
+  ],
+  "atteso": [
+   {
+    "ora": 23,
+    "livello": null,
+    "giudizio": "dati incompleti (Milano)",
+    "raffiche_forti": false,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "prob_max": 5,
+    "raffiche": 10,
+    "attraversate": [
+     {
+      "nome": "Torino",
+      "ora": 23
+     },
+     {
+      "nome": "Milano",
+      "ora": null
+     }
+    ]
+   }
+  ]
+ },
+ {
+  "nome": "partenze: nessuna ora rimasta",
+  "funzione": "partenze",
+  "argomenti": [
+   [
+    {
+     "nome": "Torino",
+     "frazione": 0,
+     "ore": [
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 0
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 1
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 2
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 3
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 4
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 5
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 6
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 7
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 8
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 9
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 10
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 11
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 12
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 13
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 14
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 15
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 16
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 17
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 18
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 19
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 20
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 21
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 22
+      },
+      {
+       "n_modelli": 6,
+       "mm": 0.0,
+       "mm_max": 0.0,
+       "modelli_con_pioggia": "0/6",
+       "prob": 5,
+       "prob_intervallo": [
+        5,
+        5
+       ],
+       "ensemble_pct": 0,
+       "temp": 10,
+       "raffiche": 10,
+       "ora": 23
+      }
+     ]
+    }
+   ],
+   20,
+   23,
+   23
+  ],
+  "atteso": []
+ },
+ {
+  "nome": "consiglio: lista vuota",
+  "funzione": "consiglio",
+  "argomenti": [
+   []
+  ],
+  "atteso": null
+ },
+ {
+  "nome": "consiglio: tutto senza dati",
+  "funzione": "consiglio",
+  "argomenti": [
+   [
+    {
+     "ora": 9,
+     "livello": null,
+     "giudizio": "dati mancanti",
+     "raffiche_forti": false,
+     "mm": null,
+     "mm_max": null,
+     "prob_max": null,
+     "raffiche": null,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 9
+      }
+     ]
+    }
+   ]
+  ],
+  "atteso": null
+ },
+ {
+  "nome": "consiglio: evita le raffiche forti, preferisce 0,3 mm con vento debole",
+  "funzione": "consiglio",
+  "argomenti": [
+   [
+    {
+     "ora": 10,
+     "livello": 0,
+     "giudizio": "ok, raffiche forti",
+     "raffiche_forti": true,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 70,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 10
+      }
+     ]
+    },
+    {
+     "ora": 11,
+     "livello": 2,
+     "giudizio": "pioggia probabile",
+     "raffiche_forti": false,
+     "mm": 0.3,
+     "mm_max": 0.3,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 11
+      }
+     ]
+    }
+   ]
+  ],
+  "atteso": {
+   "consigliabile": false,
+   "dalle": 11,
+   "alle": 12,
+   "giudizio": "pioggia probabile",
+   "prob_max": 5,
+   "mm_max": 0.3,
+   "raffiche_max": 10
+  }
+ },
+ {
+  "nome": "consiglio: fascia ok 12-15",
+  "funzione": "consiglio",
+  "argomenti": [
+   [
+    {
+     "ora": 11,
+     "livello": 1,
+     "giudizio": "a rischio",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 30,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 11
+      }
+     ]
+    },
+    {
+     "ora": 12,
+     "livello": 0,
+     "giudizio": "ok",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 12
+      }
+     ]
+    },
+    {
+     "ora": 13,
+     "livello": 0,
+     "giudizio": "ok",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 13
+      }
+     ]
+    },
+    {
+     "ora": 14,
+     "livello": 0,
+     "giudizio": "ok",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 14
+      }
+     ]
+    },
+    {
+     "ora": 15,
+     "livello": 2,
+     "giudizio": "pioggia probabile",
+     "raffiche_forti": false,
+     "mm": 3.0,
+     "mm_max": 3.0,
+     "prob_max": 100,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 15
+      }
+     ]
+    }
+   ]
+  ],
+  "atteso": {
+   "consigliabile": true,
+   "dalle": 12,
+   "alle": 15,
+   "giudizio": "ok",
+   "prob_max": 5,
+   "mm_max": 0.0,
+   "raffiche_max": 10
+  }
+ },
+ {
+  "nome": "consiglio: a parità di lunghezza vince la prima fascia ok",
+  "funzione": "consiglio",
+  "argomenti": [
+   [
+    {
+     "ora": 8,
+     "livello": 0,
+     "giudizio": "ok",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 8
+      }
+     ]
+    },
+    {
+     "ora": 9,
+     "livello": 1,
+     "giudizio": "a rischio",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 30,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 9
+      }
+     ]
+    },
+    {
+     "ora": 10,
+     "livello": 0,
+     "giudizio": "ok",
+     "raffiche_forti": false,
+     "mm": 0.0,
+     "mm_max": 0.0,
+     "prob_max": 5,
+     "raffiche": 10,
+     "attraversate": [
+      {
+       "nome": "Torino",
+       "ora": 10
+      }
+     ]
+    }
+   ]
+  ],
+  "atteso": {
+   "consigliabile": true,
+   "dalle": 8,
+   "alle": 9,
+   "giudizio": "ok",
+   "prob_max": 5,
+   "mm_max": 0.0,
+   "raffiche_max": 10
+  }
+ }
+]

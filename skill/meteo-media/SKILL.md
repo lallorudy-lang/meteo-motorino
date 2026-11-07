@@ -1,6 +1,6 @@
 ---
 name: meteo-media
-description: Previsione del tempo "media" e più affidabile, ottenuta confrontando 6 modelli meteorologici (ECMWF, GFS, ICON, Météo-France, UKMO, ItaliaMeteo) e l'ensemble europeo con i principali siti meteo italiani (iLMeteo, 3B Meteo, meteo.it, servizi regionali). Prima chiede all'utente la città, o da dove a dove si sposta, e il giorno. Poi analizza la giornata ora per ora, con probabilità e millimetri di pioggia, e indica il momento migliore per spostarsi. Per più giorni o più città fa una previsione giorno per giorno. Usa questa skill ogni volta che l'utente chiede che tempo farà, le previsioni meteo, se pioverà, quando conviene uscire o partire, se può spostarsi in motorino, scooter, bici o a piedi senza bagnarsi, il meteo per il weekend o per un giorno preciso, anche se non chiede esplicitamente una "media" o un confronto tra siti. Use it for any weather forecast request, in any language.
+description: Previsione del tempo "media" e più affidabile, ottenuta confrontando 6 modelli meteorologici (ECMWF, GFS, ICON, Météo-France, UKMO, ItaliaMeteo) e l'ensemble europeo con i principali siti meteo italiani (iLMeteo, 3B Meteo, meteo.it, servizi regionali). Prima chiede all'utente la città, o da dove a dove si sposta, e il giorno. Poi analizza la giornata ora per ora, con probabilità e millimetri di pioggia, e indica a che ora conviene partire, tenendo conto della durata del viaggio. Per più giorni o più città fa una previsione giorno per giorno. Usa questa skill ogni volta che l'utente chiede che tempo farà, le previsioni meteo, se pioverà, quando conviene uscire o partire, se può spostarsi in motorino, scooter, bici o a piedi senza bagnarsi, il meteo per il weekend o per un giorno preciso, anche se non chiede esplicitamente una "media" o un confronto tra siti. Use it for any weather forecast request, in any language.
 ---
 
 # Meteo media
@@ -39,7 +39,7 @@ python3 ~/.claude/skills/meteo-media/scripts/previsioni.py "Torino" --giornata 2
 **La mappa.** Aggiungi sempre `--mappa <file>.html`. Per un tragitto è la parte più utile, ma funziona anche per una città sola. Su un computer con browser aggiungi anche `--apri`:
 
 ```bash
-python3 ~/.claude/skills/meteo-media/scripts/previsioni.py "Torino" --giornata domani --verso "Milano" --mappa "mappa-torino-milano-2026-11-08.html" --apri
+python3 ~/.claude/skills/meteo-media/scripts/previsioni.py "Torino" --giornata domani --verso "Milano" --durata 90 --mappa "mappa-torino-milano-2026-11-08.html" --apri
 ```
 
 `--apri` apre la mappa nel browser tramite un piccolo server locale, che funziona solo su questo computer, mostra solo quella pagina e si spegne da solo dopo 60 minuti. Serve perché le tessere di OpenStreetMap si possono usare solo da una pagina web, non da un file aperto dal disco. Lo script stampa l'indirizzo (http://127.0.0.1:...): dallo all'utente.
@@ -51,7 +51,7 @@ Lo script crea una pagina con la cartina (OpenStreetMap) e il tragitto tratteggi
 - punto grigio: dati mancanti;
 - 💨: raffiche forti.
 
-Intorno ai punti piovosi c'è anche un alone colorato. Sotto la mappa una barra con le ore permette di scegliere l'ora, e la pagina si apre già sul momento migliore. Toccando un punto si vedono i dettagli.
+Intorno ai punti piovosi c'è anche un alone colorato. Sotto la mappa una barra con le ore permette di scegliere l'ora, e la pagina si apre già sul primo orario di partenza consigliato. Toccando un punto si vedono i dettagli.
 
 Salva la mappa nella cartella di lavoro con un nome chiaro (città e data) e falla vedere all'utente:
 - **con un browser su questo computer** (Claude Code): usa `--apri`;
@@ -64,7 +64,11 @@ La pagina carica la grafica da internet, quindi serve la connessione. Senza conn
 Ogni riga della tabella è la pioggia caduta **in quell'ora**: la riga "11-12" è la pioggia tra le 11 e le 12.
 
 Cosa restituisce:
-- **Momento migliore per spostarsi**: la fascia "ok" più lunga, senza raffiche forti. Se non ce n'è nessuna, lo script scrive "**Nessuna fascia davvero buona**" e indica l'ora meno sfavorevole: prima evita le raffiche forti, poi sceglie meno pioggia. In quel caso dillo chiaramente all'utente, non presentarla come un'ora asciutta.
+- **Orari di partenza consigliati**, per esempio "tra le 13:00 e le 22:00 per un viaggio di 90 minuti". Una partenza all'ora H è buona solo se **ogni punto del tragitto è "ok" nell'ora in cui ci passi** (H più la parte di viaggio necessaria per arrivarci) e non ci sono raffiche forti.
+  - **Durata:** `--durata MINUTI`. Senza, lo script la stima dai km (km in linea d'aria × 1,3 a 30 km/h, almeno 10 minuti). Se l'utente dice quanto ci mette, usa quel numero. Se non lo dice, scrivi nella risposta che la durata è stimata.
+  - Se nessuna partenza va bene, lo script scrive "**Nessun orario davvero buono**" e indica la partenza meno sfavorevole: prima evita le raffiche forti, poi sceglie meno pioggia. In quel caso dillo chiaramente all'utente, non presentarla come un orario asciutto.
+  - "**Nessun orario rimasto oggi**": la fascia oraria di oggi è già passata. Proponi domani.
+  - Righe "Partenze" (orari di partenza) e "Meteo ora per ora" (il tempo in ogni ora): non confonderle.
 - **Fasce della giornata**: ore consecutive con lo stesso giudizio, per esempio "06-11 ok · 11-22 a rischio".
 - **Tabella ora per ora**: pioggia in mm (valore centrale tra i modelli, tra parentesi il modello più piovoso), probabilità, quota delle simulazioni dell'ensemble europeo con almeno 0,1 mm in quell'ora, raffiche, temperatura, numero di modelli disponibili e, per i tragitti, *dove* piove.
 - **Giudizio**, con probabilità e millimetri tenuti separati (lo script non trasforma i mm in percentuali):
@@ -126,9 +130,9 @@ Scrivi in italiano semplice: l'utente non è un meteorologo.
 ```
 # <Città> oppure <Partenza → Arrivo>, <giorno e data>
 
-**In breve:** il momento migliore per spostarsi e quello da evitare, in 1-2 frasi.
+**In breve:** gli orari di partenza consigliati (con la durata del viaggio) e quelli da evitare, in 1-2 frasi.
 (es. "Meglio muoversi entro le 11: la mattina il rischio di pioggia è basso. Dopo aumenta la possibilità di gocce, soprattutto dopo le 20.")
-Se lo script dice "Nessuna fascia davvero buona", scrivilo così, con l'ora meno sfavorevole e cosa aspettarsi.
+Se lo script dice "Nessun orario davvero buono", scrivilo così, con la partenza meno sfavorevole e cosa aspettarsi.
 
 ## Quando spostarsi
 - **06-11 · ok**: rischio basso, probabilità 6-16%

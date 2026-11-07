@@ -351,3 +351,70 @@ def fasce(elenco):
         f["mm_max"] = max((x["mm_max"] for x in membri if x["mm_max"] is not None), default=None)
         f["raffiche_max"] = max((x["raffiche"] for x in membri if x["raffiche"] is not None), default=None)
     return gruppi
+
+
+def durata_stimata(km):
+    """Minuti di viaggio stimati in motorino: km in linea d'aria x 1,3 a 30 km/h, almeno 10."""
+    return max(10, arrotonda(km * 1.3 / 30 * 60))
+
+
+def partenze(punti, durata_min, prima_ora, alle):
+    """Per ogni partenza all'ora H (minuti :00): ogni punto si valuta nell'ora in cui ci si passa.
+
+    punti = [{nome, frazione (0 = partenza, 1 = arrivo), ore: [ValoriOra]}].
+    Il punto i si raggiunge a H + frazione_i * durata_min / 60 ore. Oltre le 23 il dato non c'è.
+    """
+    dati = [(p["nome"], p["frazione"], {o["ora"]: o for o in p["ore"]}) for p in punti]
+    lista = []
+    for H in range(prima_ora, alle):
+        attraversate, valutazioni = [], []
+        for nome, frazione, ore in dati:
+            h = math.floor(H + (frazione * durata_min) / 60)
+            if h > 23:
+                attraversate.append({"nome": nome, "ora": None})
+                valutazioni.append((nome, None, valuta_ora(None)))
+            else:
+                attraversate.append({"nome": nome, "ora": h})
+                o = ore.get(h)
+                valutazioni.append((nome, o, valuta_ora(o)))
+        mancanti = [nome for nome, _, v in valutazioni if v["livello"] is None]
+        validi = [(o, v) for _, o, v in valutazioni if v["livello"] is not None]
+        raffiche = max((o["raffiche"] for o, _ in validi if o["raffiche"] is not None), default=None)
+        forti = raffiche is not None and raffiche >= RAFFICHE_FORTI
+        if mancanti:
+            livello, giudizio = None, ("dati incompleti (" + ", ".join(mancanti) + ")") if validi else "dati mancanti"
+        else:
+            livello = max(v["livello"] for _, v in validi)
+            giudizio = LIVELLI[livello]
+        if forti:
+            giudizio += ", raffiche forti"
+        probs = [v["prob"] for _, v in validi if v["prob"] is not None]
+        lista.append({
+            "ora": H, "livello": livello, "giudizio": giudizio, "raffiche_forti": forti,
+            "mm": max((o["mm"] for o, _ in validi), default=None),
+            "mm_max": max((o["mm_max"] for o, _ in validi), default=None),
+            "prob_max": max(probs) if probs else None,
+            "raffiche": raffiche,
+            "attraversate": attraversate,
+        })
+    return lista
+
+
+def consiglio(lista):
+    """Orari di partenza consigliati: la fascia ok più lunga senza raffiche forti (a parità, la prima con
+    probabilità minore); altrimenti la partenza meno sfavorevole. None se non c'è niente da consigliare."""
+    if not lista:
+        return None
+    gruppi = fasce(lista)
+    buone = [f for f in gruppi if f["livello"] == 0 and not f["raffiche_forti"]]
+    if buone:
+        f = max(buone, key=lambda f: (f["alle"] - f["dalle"], -(f["prob_max"] or 0)))
+        return {"consigliabile": True, "dalle": f["dalle"], "alle": f["alle"], "giudizio": f["giudizio"],
+                "prob_max": f["prob_max"], "mm_max": f["mm_max"], "raffiche_max": f["raffiche_max"]}
+    candidate = [p for p in lista if p["livello"] is not None]
+    if not candidate:
+        return None
+    p = min(candidate, key=lambda x: (x["raffiche_forti"], x["livello"], x["mm"] or 0, x["mm_max"] or 0,
+                                      x["prob_max"] or 0, x["ora"]))
+    return {"consigliabile": False, "dalle": p["ora"], "alle": p["ora"] + 1, "giudizio": p["giudizio"],
+            "prob_max": p["prob_max"], "mm_max": p["mm_max"], "raffiche_max": p["raffiche"]}

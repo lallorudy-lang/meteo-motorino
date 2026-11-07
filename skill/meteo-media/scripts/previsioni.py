@@ -8,7 +8,7 @@ Uso:
   python3 previsioni.py --lat 45.07 --lon 7.69 --nome "Casa"
   python3 previsioni.py Napoli --json
   python3 previsioni.py Bologna --ore 7-9,17-19     # pioggia negli orari indicati
-  python3 previsioni.py Torino --giornata domani              # ora per ora, momento migliore
+  python3 previsioni.py Torino --giornata domani              # ora per ora, orari di partenza
   python3 previsioni.py Torino --giornata oggi --verso Moncalieri   # tragitto da A a B
   python3 previsioni.py Torino --giornata domani --verso Milano --mappa mappa.html --apri   # con la mappa
 
@@ -33,8 +33,8 @@ import urllib.error
 import urllib.parse
 import urllib.request
 
-from motore import (GIORNI_IT, MODELLI, RAFFICHE_FORTI, analizza_giorni, combina_ore, distanza_km, fasce, mm,
-                    ore_punto_da_risposte, punti_intermedi)
+from motore import (GIORNI_IT, MODELLI, RAFFICHE_FORTI, analizza_giorni, combina_ore, consiglio, distanza_km,
+                    durata_stimata, fasce, mm, ore_punto_da_risposte, partenze, punti_intermedi)
 
 VARIABILI = [
     "temperature_2m_max", "temperature_2m_min", "precipitation_sum",
@@ -229,34 +229,26 @@ def ore_punto(lat, lon, giorno):
     ens_ok = any(o["ensemble_pct"] is not None for o in ore)
     return {o["ora"]: o for o in ore}, ens_ok
 
-def giornata(punti, giorno, dalle, alle, adesso):
-    """punti = [(nome, lat, lon)]. Restituisce ore combinate, fasce, fasce buone, migliore, note."""
+def giornata(punti, giorno, dalle, alle, adesso, durata_min):
+    """punti = [(nome, lat, lon)] dalla partenza all'arrivo.
+
+    Restituisce (ore meteo combinate, fasce meteo, partenze, consiglio, note).
+    """
     dati, note = [], []
     from concurrent.futures import ThreadPoolExecutor
     with ThreadPoolExecutor(max_workers=4) as pool:  # fino a 7 punti: scaricarli in parallelo
         risultati = list(pool.map(lambda p_: ore_punto(p_[1], p_[2], giorno), punti))
-    for (nome, _, _), (d, ens_ok) in zip(punti, risultati):
-        dati.append({"nome": nome, "ore": list(d.values())})
+    totale = distanza_km(punti[0][1], punti[0][2], punti[-1][1], punti[-1][2]) if len(punti) > 1 else 0
+    for (nome, lat, lon), (d, ens_ok) in zip(punti, risultati):
+        frazione = distanza_km(punti[0][1], punti[0][2], lat, lon) / totale if totale else 0
+        dati.append({"nome": nome, "frazione": frazione, "ore": list(d.values())})
         if not ens_ok:
             note.append(f"ensemble non disponibile per {nome}: uso solo i modelli")
     prima_ora = max(dalle, adesso.hour) if giorno == adesso.date() else dalle
     ore = combina_ore(dati, prima_ora, alle)
-    gruppi = fasce(ore)
-    buone = [f for f in gruppi if f["livello"] == 0 and not f["raffiche_forti"]]
-    migliore, consigliabile = None, False
-    if buone:
-        migliore = max(buone, key=lambda f: (f["alle"] - f["dalle"], -(f["prob_max"] or 0)))
-        consigliabile = True
-    else:
-        # Nessuna fascia davvero buona: l'ora meno sfavorevole. Prima evita le raffiche forti
-        # (in motorino sono più pericolose di qualche goccia), poi livello di pioggia, mm e probabilità.
-        candidate = [o for o in ore if o["livello"] is not None]
-        if candidate:
-            o = min(candidate, key=lambda x: (x["raffiche_forti"], x["livello"], x["mm"] or 0,
-                                              x["mm_max"] or 0, x["prob_max"] or 0))
-            migliore = {"dalle": o["ora"], "alle": o["ora"] + 1, "giudizio": o["giudizio"], "livello": o["livello"],
-                        "prob_max": o["prob_max"], "mm_max": o["mm_max"], "raffiche_max": o["raffiche"]}
-    return ore, gruppi, buone, migliore, consigliabile, note
+    lista = partenze(dati, durata_min, prima_ora, alle)
+    return ore, fasce(ore), lista, consiglio(lista), note
+
 
 def descrivi_fascia(f):
     parti = [f["giudizio"]]
@@ -269,25 +261,25 @@ def descrivi_fascia(f):
     return ", ".join(parti)
 
 
-def stampa_giornata(titolo, note, ore, fasce, buone, migliore, consigliabile, tragitto):
+def stampa_giornata(titolo, note, ore, gruppi, lista, cons, durata_min, tragitto):
     print(f"## {titolo}")
     for n in note:
         print(f"_{n}_")
     print()
-    if not ore:
-        print("Nessun dato orario disponibile per questo giorno.")
+    if not lista:
+        print("**Nessun orario rimasto oggi** nella fascia richiesta.")
         return
-    fmt = lambda f: f"{f['dalle']:02d}-{f['alle']:02d}"
-    if migliore and consigliabile:
-        print(f"**Momento migliore per spostarsi:** {fmt(migliore)} ({descrivi_fascia(migliore)})")
-        altre = [f for f in buone if f is not migliore]
-        if altre:
-            print("**Altre fasce buone:** " + ", ".join(fmt(f) for f in altre))
-    elif migliore:
-        print(f"**Nessuna fascia davvero buona.** L'ora meno sfavorevole è {fmt(migliore)} ({descrivi_fascia(migliore)}).")
+    viaggio = f" per un viaggio di {durata_min} minuti" if durata_min else ""
+    if cons and cons["consigliabile"]:
+        print(f"**Orari di partenza consigliati:** tra le {cons['dalle']:02d}:00 e le {cons['alle'] - 1:02d}:00{viaggio} "
+              f"({descrivi_fascia(cons)})")
+    elif cons:
+        print(f"**Nessun orario davvero buono.** La partenza meno sfavorevole è alle {cons['dalle']:02d}:00{viaggio} "
+              f"({descrivi_fascia(cons)}).")
     else:
         print("**Dati insufficienti per consigliare un orario.**")
-    print("**Fasce della giornata:** " + " · ".join(f"{fmt(f)} {f['giudizio']}" for f in fasce))
+    print("**Partenze:** " + " · ".join(f"{f['dalle']:02d}:00-{f['alle'] - 1:02d}:00 {f['giudizio']}" for f in fasce(lista)))
+    print("**Meteo ora per ora:** " + " · ".join(f"{f['dalle']:02d}-{f['alle']:02d} {f['giudizio']}" for f in gruppi))
     print()
     col_dove = " Dove piove |" if tragitto else ""
     print(f"| Ora | Pioggia mm (max) | Probabilità | Ensemble | Raffiche | Temp | Modelli |{col_dove} Giudizio |")
@@ -461,8 +453,8 @@ D.ore.forEach((o, i) => {
 const r = document.getElementById("ora"); r.max = Math.max(0, D.ore.length - 1); r.oninput = e => mostra(+e.target.value);
 document.getElementById("sub").textContent = D.sottotitolo;
 const cons = document.getElementById("consiglio");
-if (D.migliore && D.consigliabile) cons.innerHTML = `<b>Momento migliore per spostarsi: ${fmt(D.migliore.dalle)}-${fmt(D.migliore.alle)}</b> · ${esc(D.migliore_testo)}`;
-else if (D.migliore) { cons.classList.add("no"); cons.innerHTML = `<b>Nessuna fascia davvero buona.</b> L'ora meno sfavorevole è ${fmt(D.migliore.dalle)}-${fmt(D.migliore.alle)} · ${esc(D.migliore_testo)}`; }
+if (D.migliore && D.consigliabile) cons.innerHTML = `<b>Orari di partenza consigliati: tra le ${fmt(D.migliore.dalle)}:00 e le ${fmt(D.migliore.alle - 1)}:00</b> · ${esc(D.migliore_testo)}`;
+else if (D.migliore) { cons.classList.add("no"); cons.innerHTML = `<b>Nessun orario davvero buono.</b> La partenza meno sfavorevole è alle ${fmt(D.migliore.dalle)}:00 · ${esc(D.migliore_testo)}`; }
 else { cons.classList.add("no"); cons.textContent = "Dati insufficienti per consigliare un orario."; }
 document.getElementById("nota").textContent = D.nota;
 let iniz = 0; if (D.migliore) { const k = D.ore.findIndex(o => o.ora === D.migliore.dalle); if (k >= 0) iniz = k; }
@@ -507,14 +499,14 @@ def apri_mappa(percorso, minuti=60):
     return url, aperto
 
 
-def scrivi_mappa(percorso, titolo, punti, ore, migliore, consigliabile, km, note):
+def scrivi_mappa(percorso, titolo, punti, ore, cons, km, note):
     """Pagina HTML con la mappa del tragitto: goccioline sui punti dove rischia di piovere, ora per ora."""
     dati = {
         "punti": [{"nome": n, "lat": la, "lon": lo} for n, la, lo in punti],
         "ore": [{k: o[k] for k in ("ora", "livello", "giudizio", "raffiche_forti", "livelli", "per_punto")} for o in ore],
-        "migliore": migliore and {"dalle": migliore["dalle"], "alle": migliore["alle"]},
-        "migliore_testo": descrivi_fascia(migliore) if migliore else "",
-        "consigliabile": consigliabile, "km": km, "raffiche_forti": RAFFICHE_FORTI,
+        "migliore": cons and {"dalle": cons["dalle"], "alle": cons["alle"]},
+        "migliore_testo": descrivi_fascia(cons) if cons else "",
+        "consigliabile": bool(cons and cons["consigliabile"]), "km": km, "raffiche_forti": RAFFICHE_FORTI,
         "sottotitolo": "Media di 6 modelli meteo + ensemble ECMWF (Open-Meteo)",
         "nota": " · ".join([n for n in note if not n.startswith("Punti intermedi")]
                            + (["La linea tratteggiata e i punti intermedi sono in linea d'aria, non lungo la strada: "
@@ -545,6 +537,8 @@ def main():
     p.add_argument("--verso", metavar="CITTÀ", help="Con --giornata: destinazione del tragitto (partenza = città)")
     p.add_argument("--dalle", type=int, default=6, help="Con --giornata: prima ora da considerare (default 6)")
     p.add_argument("--alle", type=int, default=23, help="Con --giornata: ultima ora, esclusa (default 23)")
+    p.add_argument("--durata", type=int, metavar="MINUTI",
+                   help="Con --giornata --verso: durata del viaggio (default: stimata dai km, 5-600)")
     p.add_argument("--mappa", metavar="FILE.html", help="Con --giornata: salva una mappa del tragitto con le zone piovose")
     p.add_argument("--apri", action="store_true",
                    help="Con --mappa: apre la mappa nel browser tramite un server locale temporaneo (serve per la cartina OSM)")
@@ -590,7 +584,10 @@ def main():
                 note.append(f"Arrivo: {nome_b} (omonimi: {'; '.join(alt_b)})")
             if intermedi:
                 note.append("Punti intermedi in linea d'aria, non lungo la strada: sono indicativi")
-        ore, fasce, buone, migliore, consigliabile, note_dati = giornata(punti, giorno, a.dalle, a.alle, adesso)
+        if a.durata is not None and not (5 <= a.durata <= 600):
+            p.error("--durata deve essere tra 5 e 600 minuti")
+        durata = a.durata if a.durata is not None else (durata_stimata(km) if a.verso else 0)
+        ore, gruppi, lista, cons, note_dati = giornata(punti, giorno, a.dalle, a.alle, adesso, durata)
         note += note_dati
         data_txt = f"{GIORNI_IT[giorno.weekday()]} {giorno.day}/{giorno.month}"
         if a.verso:
@@ -603,7 +600,7 @@ def main():
             else:
                 import os
                 percorso = os.path.abspath(os.path.expanduser(a.mappa))
-                scrivi_mappa(percorso, titolo, punti, ore, migliore, consigliabile, km, list(note))
+                scrivi_mappa(percorso, titolo, punti, ore, cons, km, list(note))
                 note.append(f"Mappa salvata in: {percorso}")
                 if a.apri:
                     url, aperto = apri_mappa(percorso)
@@ -617,11 +614,11 @@ def main():
                                     "mostra tragitto e gocce senza cartina di sfondo")
         if a.json:
             print(json.dumps({"giorno": giorno.isoformat(), "fuso": fuso, "punti": [p_[0] for p_ in punti],
-                              "km_linea_aria": round(km), "momento_migliore": migliore,
-                              "consigliabile": consigliabile, "fasce": fasce, "ore": ore, "note": note},
+                              "km_linea_aria": round(km), "durata_min": durata, "consiglio": cons,
+                              "partenze": lista, "fasce": gruppi, "ore": ore, "note": note},
                              ensure_ascii=False, indent=2))
         else:
-            stampa_giornata(titolo, note, ore, fasce, buone, migliore, consigliabile, bool(a.verso))
+            stampa_giornata(titolo, note, ore, gruppi, lista, cons, durata, bool(a.verso))
         return
 
     # Modalità più giorni: date richieste e orizzonte dei modelli.
