@@ -1,0 +1,78 @@
+<!DOCTYPE html>
+<html lang="it">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="strict-origin-when-cross-origin">
+  <title>Meteo Motorino</title>
+  <link rel="stylesheet" href="stile.css">
+  <link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+        integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+</head>
+<body>
+  <header class="intestazione">
+    <h1>Meteo Motorino</h1>
+    <p class="sottotitolo">Quando partire senza bagnarsi</p>
+  </header>
+
+  <section class="preferiti-barra" aria-label="Tragitti preferiti">
+    <div id="preferiti" class="preferiti"></div>
+    <button type="button" id="pulsante-qui" class="pulsante">📍 Qui</button>
+  </section>
+
+  <nav class="schede" role="tablist" aria-label="Sezioni">
+    <button type="button" role="tab" id="tab-partenza" aria-controls="scheda-partenza" aria-selected="true" data-scheda="partenza">Partenza</button>
+    <button type="button" role="tab" id="tab-adesso" aria-controls="scheda-adesso" aria-selected="false" data-scheda="adesso" tabindex="-1">Adesso</button>
+    <button type="button" role="tab" id="tab-giorni" aria-controls="scheda-giorni" aria-selected="false" data-scheda="giorni" tabindex="-1">Più giorni</button>
+    <button type="button" role="tab" id="tab-impostazioni" aria-controls="scheda-impostazioni" aria-selected="false" data-scheda="impostazioni" tabindex="-1">Impostazioni</button>
+  </nav>
+
+  <main>
+    <section id="scheda-partenza" role="tabpanel" aria-labelledby="tab-partenza"><div id="contenuto-partenza"></div></section>
+    <section id="scheda-adesso" role="tabpanel" aria-labelledby="tab-adesso" hidden>
+      <p class="prossimamente">In arrivo: radar della Protezione Civile e pluviometri.</p>
+    </section>
+    <section id="scheda-giorni" role="tabpanel" aria-labelledby="tab-giorni" hidden><div id="contenuto-giorni"></div></section>
+    <section id="scheda-impostazioni" role="tabpanel" aria-labelledby="tab-impostazioni" hidden>
+      <h2>Dati sul dispositivo</h2>
+      <p>Preferiti e ultimi risultati restano solo su questo dispositivo, con le coordinate che hai usato.</p>
+      <div class="azioni">
+        <button type="button" id="esporta" class="pulsante">Esporta preferiti</button>
+        <button type="button" id="importa" class="pulsante">Importa preferiti</button>
+        <button type="button" id="cancella-dati" class="pulsante pericolo">Cancella dati locali</button>
+      </div>
+      <label for="testo-importa" class="etichetta">Testo da incollare per importare</label>
+      <textarea id="testo-importa" rows="4"></textarea>
+      <p id="esito-impostazioni" class="esito" role="status" aria-live="polite"></p>
+    </section>
+  </main>
+
+  <dialog id="privacy" aria-labelledby="titolo-privacy">
+    <h2 id="titolo-privacy">Prima di usare la posizione</h2>
+    <ul>
+      <li>Le coordinate vanno alle API meteo (Open-Meteo e ItaliaMeteo).</li>
+      <li>Le tessere della cartina e del radar rivelano la zona mostrata.</li>
+      <li>Open-Meteo dichiara di poter conservare le coordinate nei log fino a 90 giorni.</li>
+      <li>Preferiti e ultimi risultati restano su questo dispositivo, con le coordinate.</li>
+    </ul>
+    <p>Puoi cancellare tutto in Impostazioni, con "Cancella dati locali".</p>
+    <div class="azioni">
+      <button type="button" id="privacy-annulla" class="pulsante">Annulla</button>
+      <button type="button" id="privacy-continua" class="pulsante primario">Continua</button>
+    </div>
+  </dialog>
+
+  <footer class="link-utili" id="link-utili">
+    <p>Fonti e link utili</p>
+    <ul>
+      <li><a href="https://www.meteoam.it/it/home" target="_blank" rel="noopener">Aeronautica Militare (meteoam.it)</a></li>
+      <li><a href="https://mappe.protezionecivile.gov.it/it/mappe-e-dashboard-rischi/piattaforma-radar/" target="_blank" rel="noopener">Radar e bollettini della Protezione Civile</a></li>
+      <li><a href="https://www.arpalombardia.it/" target="_blank" rel="noopener">ARPA Lombardia</a></li>
+      <li><a href="https://www.arpa.piemonte.it/" target="_blank" rel="noopener">ARPA Piemonte</a></li>
+    </ul>
+    <p>Dati: Open-Meteo (CC BY 4.0). Cartina: © OpenStreetMap.</p>
+  </footer>
+
+  <script type="module" src="principale.js"></script>
+</body>
+</html>
