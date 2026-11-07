@@ -1,0 +1,4 @@
+schema_version: "1.1"
+name: genova-milano-dove-piove-di-piu
+expected_outcome: |
+  Previsione giorno per giorno a 5 giorni per Genova e Milano, con quantità di pioggia confrontabili e una risposta chiara su quale città avrà più pioggia.
