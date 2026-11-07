@@ -276,3 +276,11 @@ Tutte e quattro le funzioni restano, ma si costruiscono a fasi. Ogni fase si chi
 ## 11. Rapporto con la skill
 
 La skill `meteo-media` resta per le domande in chat: fa anche le ricerche web e crea la mappa. Il suo sorgente vive in `skill/meteo-media/` dentro questo progetto. Una regola del motore si cambia sempre in Python e in JavaScript insieme, con un caso nel contratto condiviso.
+
+## 12. Revisione 2026-11-07 (richiesta dell'utente dopo la prova)
+
+**Inserimento di partenza e arrivo in due passi.** Ogni campo (Da, A) chiede prima la città (Torino, Milano, Roma…). Poi si apre un secondo campo per la via, con suggerimenti, e un numero civico facoltativo. Il tragitto si calcola tra i due punti scelti, con la linea sulla mappa come già previsto.
+
+**Quantità di pioggia: barre.** La pioggia per ogni fascia oraria e per ogni giorno si mostra con barre, di altezza proporzionale ai millimetri (valore centrale tra i modelli, con il massimo tra parentesi). La grafica animata delle gocce non è prevista per ora.
+
+**Aperto:** il servizio per cercare le vie. Il servizio attuale cerca solo le località. Per le vie si propone OpenStreetMap (Nominatim), gratuito, con un limite di una richiesta al secondo e uso moderato, adatto a un uso personale. Da confermare.
