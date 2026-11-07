@@ -1,6 +1,7 @@
 // Guscio dell'app: schede, preferiti, impostazioni e schermata privacy.
 // Le schede Partenza e Più giorni si montano nei passi 10 e 11.
 import { leggi, salva, togli, esporta, importa, cancellaDatiLocali } from "./preferiti.js";
+import { montaPartenza } from "./viste/partenza.js";
 
 const CHIAVE_PRIVACY = "meteo-motorino.privacy-letta";
 const archivio = globalThis.localStorage;
@@ -119,4 +120,5 @@ collegaQui();
 collegaImpostazioni();
 disegnaPreferiti();
 document.addEventListener("preferito-salvato", disegnaPreferiti);
+montaPartenza(document.getElementById("contenuto-partenza"));
 apriScheda("partenza");

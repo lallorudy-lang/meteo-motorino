@@ -56,3 +56,17 @@ table.dett td { padding: 1px 6px 1px 0; }
 .barra-ore button:focus-visible { outline: 3px solid #000; outline-offset: 2px; }
 .stato-ora { font-weight: 700; margin: 10px 0 0; }
 .nota-mappa { font-size: 13px; color: var(--secondario); margin: 6px 0 0; }
+
+/* Scheda Partenza */
+.partenza-form { display: grid; gap: 10px; }
+.campo { display: grid; gap: 4px; }
+.campo label, .etichetta-fascia, .fascia > label { font-size: 14px; color: var(--secondario); }
+.campo input, .fascia select, .omonimi, .partenza-form select { font: inherit; padding: 8px 10px; border: 1px solid var(--bordo); border-radius: 8px; background: #fff; min-height: 42px; }
+.fascia { display: flex; gap: 6px; align-items: center; flex-wrap: wrap; }
+.partenza-form .pulsante.primario { justify-self: start; }
+.banner { font-weight: 700; padding: 10px 12px; border-radius: 10px; background: #fff; border-left: 5px solid var(--ok); box-shadow: 0 1px 3px #0001; }
+.banner.no { border-left-color: var(--ris); }
+.fasce, .nota { font-size: 14px; color: var(--secondario); }
+.tabella-ore { border-collapse: collapse; width: 100%; font-size: 13px; background: #fff; margin-top: 10px; display: block; overflow-x: auto; }
+.tabella-ore th, .tabella-ore td { padding: 4px 6px; border-bottom: 1px solid var(--bordo); text-align: left; white-space: nowrap; }
+.risultato > * { margin-top: 10px; }
