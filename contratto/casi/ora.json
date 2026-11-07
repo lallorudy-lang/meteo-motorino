@@ -1,0 +1,236 @@
+[
+ {
+  "nome": "0,3 mm con prob 5% è pioggia probabile, prob resta 5",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.3,
+    "mm_max": 0.3,
+    "modelli_con_pioggia": "0/6",
+    "prob": 5,
+    "prob_intervallo": [
+     5,
+     5
+    ],
+    "ensemble_pct": 5,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 2,
+   "prob": 5,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "1 modello senza probabilità: dati insufficienti",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 1,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": null,
+    "prob_intervallo": null,
+    "ensemble_pct": null,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": null,
+   "prob": null,
+   "motivo": "dati insufficienti"
+  }
+ },
+ {
+  "nome": "1 modello asciutto al 5%: dati insufficienti, non ok",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 1,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": 5,
+    "prob_intervallo": [
+     5,
+     5
+    ],
+    "ensemble_pct": null,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": null,
+   "prob": 5,
+   "motivo": "dati insufficienti"
+  }
+ },
+ {
+  "nome": "1 modello con 0,5 mm all'80%: segnale di pioggia valido",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 1,
+    "mm": 0.5,
+    "mm_max": 0.5,
+    "modelli_con_pioggia": "0/6",
+    "prob": 80,
+    "prob_intervallo": [
+     80,
+     80
+    ],
+    "ensemble_pct": null,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 2,
+   "prob": 80,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "prob 20 (mediana di 20 e 21 arrotondata alla pari) è ok",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": 20,
+    "prob_intervallo": [
+     20,
+     20
+    ],
+    "ensemble_pct": 0,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 0,
+   "prob": 20,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "prob 21 è a rischio",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": 21,
+    "prob_intervallo": [
+     21,
+     21
+    ],
+    "ensemble_pct": 0,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 1,
+   "prob": 21,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "prob 51 è pioggia probabile",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.0,
+    "mm_max": 0.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": 51,
+    "prob_intervallo": [
+     51,
+     51
+    ],
+    "ensemble_pct": 0,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 2,
+   "prob": 51,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "un modello con 1 mm su mediana 0 è a rischio",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.0,
+    "mm_max": 1.0,
+    "modelli_con_pioggia": "0/6",
+    "prob": 5,
+    "prob_intervallo": [
+     5,
+     5
+    ],
+    "ensemble_pct": 0,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 1,
+   "prob": 5,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "0,1 mm è a rischio",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   {
+    "n_modelli": 6,
+    "mm": 0.1,
+    "mm_max": 0.1,
+    "modelli_con_pioggia": "0/6",
+    "prob": 5,
+    "prob_intervallo": [
+     5,
+     5
+    ],
+    "ensemble_pct": 0,
+    "temp": 10,
+    "raffiche": 10
+   }
+  ],
+  "atteso": {
+   "livello": 1,
+   "prob": 5,
+   "motivo": null
+  }
+ },
+ {
+  "nome": "ora assente: dati mancanti",
+  "funzione": "valuta_ora",
+  "argomenti": [
+   null
+  ],
+  "atteso": {
+   "livello": null,
+   "prob": null,
+   "motivo": "dati mancanti"
+  }
+ }
+]

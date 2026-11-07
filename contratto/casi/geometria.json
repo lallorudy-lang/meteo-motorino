@@ -1,0 +1,63 @@
+[
+ {
+  "nome": "distanza Torino-Milano",
+  "funzione": "distanza_km",
+  "argomenti": [
+   45.07,
+   7.69,
+   45.46,
+   9.19
+  ],
+  "atteso": 125.14464337578373
+ },
+ {
+  "nome": "punti intermedi: 8 km nessuno",
+  "funzione": "punti_intermedi",
+  "argomenti": [
+   45.07,
+   7.69,
+   45.0,
+   7.68,
+   8
+  ],
+  "atteso": []
+ },
+ {
+  "nome": "punti intermedi: 125 km cinque punti",
+  "funzione": "punti_intermedi",
+  "argomenti": [
+   45.07,
+   7.69,
+   45.46,
+   9.19,
+   125
+  ],
+  "atteso": [
+   [
+    "km 21",
+    45.135,
+    7.94
+   ],
+   [
+    "km 42",
+    45.2,
+    8.19
+   ],
+   [
+    "km 62",
+    45.265,
+    8.44
+   ],
+   [
+    "km 83",
+    45.33,
+    8.69
+   ],
+   [
+    "km 104",
+    45.395,
+    8.94
+   ]
+  ]
+ }
+]

@@ -1,0 +1,79 @@
+[
+ {
+  "nome": "arrotonda (20.5,)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   20.5
+  ],
+  "atteso": 20
+ },
+ {
+  "nome": "arrotonda (21.5,)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   21.5
+  ],
+  "atteso": 22
+ },
+ {
+  "nome": "arrotonda (0.25, 1)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   0.25,
+   1
+  ],
+  "atteso": 0.2
+ },
+ {
+  "nome": "arrotonda (2.675, 2)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   2.675,
+   2
+  ],
+  "atteso": 2.67
+ },
+ {
+  "nome": "arrotonda (0.35, 1)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   0.35,
+   1
+  ],
+  "atteso": 0.3
+ },
+ {
+  "nome": "arrotonda (-0.5,)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   -0.5
+  ],
+  "atteso": 0
+ },
+ {
+  "nome": "arrotonda (7.45, 1)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   7.45,
+   1
+  ],
+  "atteso": 7.5
+ },
+ {
+  "nome": "arrotonda (3.0,)",
+  "funzione": "arrotonda",
+  "argomenti": [
+   3.0
+  ],
+  "atteso": 3
+ },
+ {
+  "nome": "arrotonda null",
+  "funzione": "arrotonda",
+  "argomenti": [
+   null,
+   1
+  ],
+  "atteso": null
+ }
+]
