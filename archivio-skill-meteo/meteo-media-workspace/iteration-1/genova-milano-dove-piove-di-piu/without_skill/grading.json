@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Both tables have Min / Max for all 5 days."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": false,
+      "evidence": "No per-day reliability; only a generic note that rain amounts beyond 3 days are less reliable."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "Default model plus ECMWF, ICON-EU, Météo-France named."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": false,
+      "evidence": "Source given as plain italic text, no markdown links."
+    },
+    {
+      "text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.",
+      "passed": true,
+      "evidence": "Pioggia column in mm for all 5 days in both tables, with totals."
+    },
+    {
+      "text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.",
+      "passed": true,
+      "evidence": "'In breve: pioverà di più a Genova.'"
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.67
+  },
+  "timing": {
+    "executor_duration_seconds": 44.8,
+    "total_duration_seconds": 44.8
+  }
+}

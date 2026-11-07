@@ -1,0 +1,405 @@
+{
+  "metadata": {
+    "skill_name": "meteo-media",
+    "skill_path": "<path/to/skill>",
+    "executor_model": "<model-name>",
+    "analyzer_model": "<model-name>",
+    "timestamp": "2026-11-07T12:35:09Z",
+    "evals_run": [
+      "bologna-domani-bici",
+      "firenze-giovedi-venerdi-lontano",
+      "genova-milano-dove-piove-di-piu"
+    ],
+    "runs_per_configuration": 1
+  },
+  "runs": [
+    {
+      "eval_id": "bologna-domani-bici",
+      "eval_name": "bologna-domani-bici",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 59.2,
+        "tokens": 67124,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Dom 8 min 7° max 12°; Lun 9 min 7° max 11°."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "Dom 'Affidabilità: alta', Lun 'Affidabilità: bassa'."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "6 models + ECMWF ensemble, iLMeteo, meteo.it, Tempoitalia."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of 6 markdown links."
+        },
+        {
+          "text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).",
+          "passed": true,
+          "evidence": "Sections for Domenica 8 and Lunedì 9 novembre."
+        },
+        {
+          "text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.",
+          "passed": true,
+          "evidence": "'Domenica: sì, senza problemi'; 'Lunedì: sì all'andata, con la giacca antipioggia nello zaino per il ritorno'."
+        },
+        {
+          "text": "The answer says whether rain is expected specifically during morning and evening commuting hours on Monday 9 November.",
+          "passed": true,
+          "evidence": "'Orari bici: 7-9 quasi certamente asciutto... 17-19 per ora asciutto... Il rischio vero è dopo le 19', from hourly model data."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": "firenze-giovedi-venerdi-lontano",
+      "eval_name": "firenze-giovedi-venerdi-lontano",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 8,
+        "failed": 0,
+        "total": 8,
+        "time_seconds": 65.6,
+        "tokens": 69005,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Table: Gio 14°/18°, Ven 14°/17°."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "Affidabilità 'media' for both days, explained via ensemble agreement."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "4 models + ensemble, meteo.it, 3B Meteo, iLMeteo, Nove Firenze."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of 7 markdown links."
+        },
+        {
+          "text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+          "passed": true,
+          "evidence": "giovedì 12 e venerdì 13 novembre 2026."
+        },
+        {
+          "text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+          "passed": true,
+          "evidence": "'Mancano ancora 5-6 giorni, quindi è una tendenza' and 'Conviene ricontrollare mercoledì 11'."
+        },
+        {
+          "text": "The answer gives a clear yes or no on whether to bring an umbrella.",
+          "passed": true,
+          "evidence": "'Risposta breve: sì, porta l'ombrello.'"
+        },
+        {
+          "text": "The answer says at what time of day the rain is expected to be heaviest on at least one of the two days.",
+          "passed": true,
+          "evidence": "'Giovedì... la sera peggiora (circa 11 mm). Il rientro serale è il momento più bagnato'; Venerdì 'il picco arriva nella notte'."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": "genova-milano-dove-piove-di-piu",
+      "eval_name": "genova-milano-dove-piove-di-piu",
+      "configuration": "with_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 71.7,
+        "tokens": 71901,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Both tables have Min / Max for all 5 days."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "Affidabilità column for all 5 days in both tables."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "6 models + ensemble, iLMeteo, Meteogiornale, 3B Meteo, Il Giorno."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of 9 markdown links."
+        },
+        {
+          "text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.",
+          "passed": true,
+          "evidence": "Pioggia column with mm for all 5 days in both tables (e.g. 'meno di 1 mm (0,1 mm)', '0 mm')."
+        },
+        {
+          "text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.",
+          "passed": true,
+          "evidence": "'In breve: pioverà molto di più a Genova' (59 vs 9 mm)."
+        },
+        {
+          "text": "Where the models disagree strongly on Genova's rain amounts, the answer gives a central estimate (median or a typical value) or explicitly separates the wetter models, rather than presenting only an average inflated by them.",
+          "passed": true,
+          "evidence": "Uses the median ('se un modello esagera, la mediana non si sposta'); separates Météo-France/UKMO 35-40 mm from the others 0-7 mm."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": "bologna-domani-bici",
+      "eval_name": "bologna-domani-bici",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 1.0,
+        "passed": 7,
+        "failed": 0,
+        "total": 7,
+        "time_seconds": 59.8,
+        "tokens": 67210,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Table: Dom 7°/12°, Lun 7°/11°."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "Table column Affidabilità: alta / bassa."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "6 models, iLMeteo, meteo.it, BolognaToday."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of markdown links."
+        },
+        {
+          "text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).",
+          "passed": true,
+          "evidence": "Dom 8 and Lun 9."
+        },
+        {
+          "text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.",
+          "passed": true,
+          "evidence": "'Domenica: via libera'; Lunedì: go by bike with a rain jacket."
+        },
+        {
+          "text": "The answer says whether rain is expected specifically during morning and evening commuting hours on Monday 9 November.",
+          "passed": true,
+          "evidence": "'all'andata, la mattina, probabilmente non piove. Il rischio riguarda soprattutto il ritorno nel tardo pomeriggio o la sera' — taken from news articles, not from hourly data."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": "firenze-giovedi-venerdi-lontano",
+      "eval_name": "firenze-giovedi-venerdi-lontano",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.88,
+        "passed": 7,
+        "failed": 1,
+        "total": 8,
+        "time_seconds": 57.9,
+        "tokens": 67164,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Gio min 14° max 18°; Ven min 14° max 17°."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "'Affidabilità: bassa' for each day."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "4 models, iLMeteo, meteo.it, Nove Firenze, Meteo POP."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of 7 markdown links."
+        },
+        {
+          "text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+          "passed": true,
+          "evidence": "giovedì 12 e venerdì 13 novembre."
+        },
+        {
+          "text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+          "passed": true,
+          "evidence": "'A 5-6 giorni la previsione è una tendenza... Conviene ricontrollare martedì o mercoledì'."
+        },
+        {
+          "text": "The answer gives a clear yes or no on whether to bring an umbrella.",
+          "passed": true,
+          "evidence": "'Risposta breve: sì, porta l'ombrello.'"
+        },
+        {
+          "text": "The answer says at what time of day the rain is expected to be heaviest on at least one of the two days.",
+          "passed": false,
+          "evidence": "No time of day given; it says timing will be clearer on Tuesday/Wednesday ('si capirà se piove tutto il giorno o solo in alcune ore')."
+        }
+      ],
+      "notes": []
+    },
+    {
+      "eval_id": "genova-milano-dove-piove-di-piu",
+      "eval_name": "genova-milano-dove-piove-di-piu",
+      "configuration": "old_skill",
+      "run_number": 1,
+      "result": {
+        "pass_rate": 0.86,
+        "passed": 6,
+        "failed": 1,
+        "total": 7,
+        "time_seconds": 79.9,
+        "tokens": 70877,
+        "tool_calls": 0,
+        "errors": 0
+      },
+      "expectations": [
+        {
+          "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+          "passed": true,
+          "evidence": "Both tables have Min / Max for all 5 days."
+        },
+        {
+          "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+          "passed": true,
+          "evidence": "Affidabilità column for all 5 days."
+        },
+        {
+          "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+          "passed": true,
+          "evidence": "6 models, iLMeteo, 3B Meteo, meteo.it, GenovaToday, Telepass Moveo, Meteo5."
+        },
+        {
+          "text": "The answer ends with a list of sources given as markdown links.",
+          "passed": true,
+          "evidence": "Ends with 'Fonti:' list of 10 markdown links."
+        },
+        {
+          "text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.",
+          "passed": false,
+          "evidence": "Tables have no mm column: Genova Dom 8 ('qualche goccia'), Milano Dom 8 and Mer 11 ('asciutto') have no mm value."
+        },
+        {
+          "text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.",
+          "passed": true,
+          "evidence": "'A Genova, con buona probabilità.'"
+        },
+        {
+          "text": "Where the models disagree strongly on Genova's rain amounts, the answer gives a central estimate (median or a typical value) or explicitly separates the wetter models, rather than presenting only an average inflated by them.",
+          "passed": true,
+          "evidence": "Gives the 35 mm average but explicitly separates the two wetter models and says with the others the total is 15-20 mm."
+        }
+      ],
+      "notes": []
+    }
+  ],
+  "run_summary": {
+    "with_skill": {
+      "pass_rate": {
+        "mean": 1.0,
+        "stddev": 0.0,
+        "min": 1.0,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 65.5,
+        "stddev": 6.2506,
+        "min": 59.2,
+        "max": 71.7
+      },
+      "tokens": {
+        "mean": 69343.3333,
+        "stddev": 2406.4049,
+        "min": 67124,
+        "max": 71901
+      }
+    },
+    "old_skill": {
+      "pass_rate": {
+        "mean": 0.9133,
+        "stddev": 0.0757,
+        "min": 0.86,
+        "max": 1.0
+      },
+      "time_seconds": {
+        "mean": 65.8667,
+        "stddev": 12.1903,
+        "min": 57.9,
+        "max": 79.9
+      },
+      "tokens": {
+        "mean": 68417.0,
+        "stddev": 2130.5466,
+        "min": 67164,
+        "max": 70877
+      }
+    },
+    "delta": {
+      "pass_rate": "+0.09",
+      "time_seconds": "-0.4",
+      "tokens": "+926"
+    }
+  },
+  "notes": [
+    "Le 3 novità funzionano: orari della pioggia (Bologna 7-9/17-19, Firenze sera e notte), mm per ogni giorno, mediana al posto della media gonfiata.",
+    "Il criterio sugli orari da pendolare passa anche con la skill vecchia, ma lì l'informazione viene dagli articoli di giornale e non dai dati: la nuova è più precisa, il criterio non lo distingue.",
+    "Con l'ensemble l'affidabilità di Firenze sale da 'bassa' a 'media': tutte le 51 simulazioni danno pioggia.",
+    "Tempi e token sono praticamente uguali alla versione vecchia: le novità non costano nulla in più.",
+    "Genova-Milano con la skill nuova ha preso i 5 giorni da domenica a giovedì, la vecchia da sabato a mercoledì. Ho aggiunto alla skill la regola che 'i prossimi N giorni' partono da oggi."
+  ]
+}

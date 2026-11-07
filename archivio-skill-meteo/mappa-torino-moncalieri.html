@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="it"><head><meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<meta name="referrer" content="strict-origin-when-cross-origin">
+<title>Mar 10/11: Torino → Moncalieri (circa 8 km in linea d&#x27;aria)</title>
+<link rel="stylesheet" href="https://unpkg.com/leaflet@1.9.4/dist/leaflet.css"
+ integrity="sha256-p4NxAoJBhIIN+hmNHrzRCf9tD/miZyoHS5obTRR9BMY=" crossorigin="">
+<script src="https://unpkg.com/leaflet@1.9.4/dist/leaflet.js"
+ integrity="sha256-20nQCchB9co0qIjJZRGuk2/Z9VM+kNiyxNV1lvTlZBo=" crossorigin=""></script>
+<style>
+ :root{--ok:#1e7a43;--ris:#e0a800;--pio:#1f6fd1;--nd:#6b7280;--bg:#f6f7f9;--tx:#1c2430}
+ *{box-sizing:border-box} body{margin:0;font:15px/1.4 -apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,sans-serif;color:var(--tx);background:var(--bg)}
+ header{padding:14px 18px 8px} h1{font-size:19px;margin:0 0 4px} .sub{color:#4b5563;font-size:13px}
+ .consiglio{margin:10px 18px;padding:10px 14px;border-radius:10px;background:#fff;border-left:5px solid var(--ok);box-shadow:0 1px 3px #0001}
+ .consiglio.no{border-left-color:var(--ris)}
+ #map{height:58vh;min-height:320px;margin:0 18px;border-radius:12px;box-shadow:0 1px 4px #0002;background:#e5e7eb}
+ #map .offline{padding:40px 20px;text-align:center;color:#4b5563}
+ .pannello{margin:12px 18px 18px;padding:12px 14px;background:#fff;border-radius:12px;box-shadow:0 1px 3px #0001}
+ .ora-sel{display:flex;align-items:center;gap:10px;flex-wrap:wrap} .ora-sel label{font-size:17px;font-weight:700;min-width:110px}
+ input[type=range]{flex:1;min-width:160px;accent-color:var(--pio)}
+ .stato{font-weight:700} .barra{display:flex;gap:3px;margin-top:12px;overflow-x:auto;padding:4px 2px 6px;scroll-snap-type:x proximity}
+ .barra button{flex:1 0 34px;min-width:34px;height:44px;border:0;border-radius:6px;cursor:pointer;font:600 12px/1.1 inherit;
+   display:flex;flex-direction:column;align-items:center;justify-content:center;gap:2px;scroll-snap-align:center}
+ .barra button.l0{background:var(--ok);color:#fff} .barra button.l1{background:var(--ris);color:var(--tx)}
+ .barra button.l2{background:var(--pio);color:#fff} .barra button.lnd{background:var(--nd);color:#fff}
+ .barra button[aria-pressed=true]{outline:3px solid var(--tx);outline-offset:2px}
+ .barra button:focus-visible{outline:3px solid #000;outline-offset:2px}
+ .legenda{display:flex;gap:14px;flex-wrap:wrap;margin-top:10px;font-size:12px;color:#4b5563}
+ .legenda i{display:inline-block;width:12px;height:12px;border-radius:3px;margin-right:4px;vertical-align:-2px}
+ .nota{font-size:12px;color:#4b5563;margin-top:8px}
+ .pin{position:relative;filter:drop-shadow(0 1px 2px #0005)} .pin .badge{position:absolute;right:-6px;top:-6px;font-size:16px}
+ .leaflet-tooltip.etich{background:#fffe;border:0;box-shadow:0 1px 3px #0003;font-weight:600;padding:2px 6px}
+ table.dett{border-collapse:collapse;font-size:13px} table.dett td{padding:1px 6px 1px 0}
+ .senza-sfondo{max-width:260px;background:#fffffff0;padding:8px 10px;border-radius:8px;font-size:12px;box-shadow:0 1px 3px #0003}
+ .sr{position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0 0 0 0);white-space:nowrap}
+</style></head><body>
+<header><h1>Mar 10/11: Torino → Moncalieri (circa 8 km in linea d&#x27;aria)</h1><div class="sub" id="sub"></div></header>
+<div class="consiglio" id="consiglio"></div>
+<div id="map" role="region" aria-label="Mappa del tragitto con le zone di pioggia"></div>
+<div class="pannello">
+ <div class="ora-sel"><label for="ora" id="ora-lbl"></label><input type="range" id="ora" min="0" step="1">
+  <span class="stato" id="stato" aria-live="polite"></span></div>
+ <div class="barra" id="barra" role="group" aria-label="Scegli l'ora"></div>
+ <div class="legenda">
+  <span><i style="background:var(--ok)"></i>✓ ok</span><span><i style="background:var(--ris)"></i>💧 a rischio</span>
+  <span><i style="background:var(--pio)"></i>💧💧💧 pioggia probabile</span><span><i style="background:var(--nd)"></i>? dati mancanti</span><span>💨 raffiche forti</span>
+ </div>
+ <div class="nota" id="nota"></div>
+</div>
+<script>
+const D = {"punti": [{"nome": "Torino", "lat": 45.07049, "lon": 7.68682}, {"nome": "Moncalieri", "lat": 44.9994, "lon": 7.68236}], "ore": [{"ora": 6, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 8, "prob_intervallo": [0, 38], "ensemble_pct": 18, "temp": 7, "raffiche": 2}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 8, "prob_intervallo": [0, 38], "ensemble_pct": 18, "temp": 7, "raffiche": 3}}}, {"ora": 7, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "2/5", "prob": 6, "prob_intervallo": [0, 37], "ensemble_pct": 14, "temp": 7, "raffiche": 4}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.4, "modelli_con_pioggia": "2/5", "prob": 6, "prob_intervallo": [0, 37], "ensemble_pct": 14, "temp": 7, "raffiche": 4}}}, {"ora": 8, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "1/5", "prob": 4, "prob_intervallo": [0, 33], "ensemble_pct": 14, "temp": 7, "raffiche": 6}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "2/5", "prob": 6, "prob_intervallo": [3, 33], "ensemble_pct": 14, "temp": 7, "raffiche": 4}}}, {"ora": 9, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "1/5", "prob": 4, "prob_intervallo": [0, 28], "ensemble_pct": 14, "temp": 8, "raffiche": 9}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "1/5", "prob": 5, "prob_intervallo": [3, 28], "ensemble_pct": 14, "temp": 8, "raffiche": 7}}}, {"ora": 10, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "1/5", "prob": 2, "prob_intervallo": [0, 22], "ensemble_pct": 6, "temp": 9, "raffiche": 10}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "1/5", "prob": 2, "prob_intervallo": [0, 22], "ensemble_pct": 6, "temp": 9, "raffiche": 9}}}, {"ora": 11, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "1/5", "prob": 2, "prob_intervallo": [0, 17], "ensemble_pct": 6, "temp": 10, "raffiche": 12}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "1/5", "prob": 5, "prob_intervallo": [1, 17], "ensemble_pct": 6, "temp": 10, "raffiche": 12}}}, {"ora": 12, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "1/5", "prob": 2, "prob_intervallo": [0, 13], "ensemble_pct": 6, "temp": 11, "raffiche": 13}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.9, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 13], "ensemble_pct": 6, "temp": 11, "raffiche": 12}}}, {"ora": 13, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 10], "ensemble_pct": 2, "temp": 11, "raffiche": 13}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.3, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 10], "ensemble_pct": 2, "temp": 11, "raffiche": 12}}}, {"ora": 14, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 8], "ensemble_pct": 2, "temp": 11, "raffiche": 11}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.3, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 8], "ensemble_pct": 2, "temp": 11, "raffiche": 12}}}, {"ora": 15, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.1, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 7], "ensemble_pct": 2, "temp": 11, "raffiche": 10}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.3, "modelli_con_pioggia": "2/5", "prob": 2, "prob_intervallo": [0, 7], "ensemble_pct": 2, "temp": 11, "raffiche": 9}}}, {"ora": 16, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 2, "prob_intervallo": [0, 5], "ensemble_pct": 2, "temp": 11, "raffiche": 8}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 2, "prob_intervallo": [0, 5], "ensemble_pct": 2, "temp": 11, "raffiche": 7}}}, {"ora": 17, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 1, "prob_intervallo": [0, 4], "ensemble_pct": 2, "temp": 10, "raffiche": 7}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 1, "prob_intervallo": [0, 4], "ensemble_pct": 2, "temp": 10, "raffiche": 6}}}, {"ora": 18, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 3], "ensemble_pct": 2, "temp": 9, "raffiche": 5}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 3], "ensemble_pct": 2, "temp": 9, "raffiche": 5}}}, {"ora": 19, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 2], "ensemble_pct": 0, "temp": 9, "raffiche": 5}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 2], "ensemble_pct": 0, "temp": 9, "raffiche": 5}}}, {"ora": 20, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 8, "raffiche": 7}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 8, "raffiche": 5}}}, {"ora": 21, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 8, "raffiche": 6}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 8, "raffiche": 5}}}, {"ora": 22, "livello": 0, "giudizio": "ok", "raffiche_forti": false, "livelli": {"Torino": 0, "Moncalieri": 0}, "per_punto": {"Torino": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 8, "raffiche": 4}, "Moncalieri": {"n_modelli": 5, "mm": 0.0, "mm_max": 0.0, "modelli_con_pioggia": "0/5", "prob": 0, "prob_intervallo": [0, 1], "ensemble_pct": 0, "temp": 7, "raffiche": 5}}}], "migliore": {"dalle": 6, "alle": 23}, "migliore_testo": "ok, probabilità fino al 18%, fino a 0,9 mm/h nel modello più piovoso", "consigliabile": true, "km": 7.912612356027466, "raffiche_forti": 45, "sottotitolo": "Media di 6 modelli meteo + ensemble ECMWF (Open-Meteo)", "nota": "Partenza: Torino, Piemonte, Italia (omonimi: Torino, Emilia-Romagna) · Tocca un punto per i dettagli, scegli l'ora con la barra"};
+const HEX = ["#1e7a43", "#e0a800", "#1f6fd1"], ND = "#6b7280";
+const NOMI_LIV = ["ok", "a rischio", "pioggia probabile"], SIMB = ["✓", "💧", "🌧"];
+const esc = t => String(t ?? "").replace(/[&<>"']/g, c => ({"&": "&amp;", "<": "&lt;", ">": "&gt;", '"': "&quot;", "'": "&#39;"}[c]));
+const fmt = n => String(n).padStart(2, "0");
+const mmf = x => (x === null || x === undefined) ? "-" : x.toFixed(1).replace(".", ",");
+const testoLiv = l => (l === null || l === undefined) ? "dati mancanti" : NOMI_LIV[l];
+const GOCCIA = (x, y, s, c) => `<path transform="translate(${x},${y}) scale(${s})" d="M12 1C12 1 3 11.5 3 16.5a9 9 0 0 0 18 0C21 11.5 12 1 12 1z" fill="${c}" stroke="#fff" stroke-width="1.5"/>`;
+function svgPunto(liv) {
+  if (liv === null || liv === undefined) return `<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="${ND}" stroke="#fff" stroke-width="2"/><text x="20" y="26" text-anchor="middle" font-size="17" fill="#fff" font-weight="700">?</text></svg>`;
+  if (liv === 0) return `<svg width="40" height="40" viewBox="0 0 40 40" aria-hidden="true"><circle cx="20" cy="20" r="15" fill="${HEX[0]}" stroke="#fff" stroke-width="2"/><path d="M12 20l6 6 10-12" fill="none" stroke="#fff" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/></svg>`;
+  if (liv === 1) return `<svg width="40" height="44" viewBox="0 0 40 44" aria-hidden="true">${GOCCIA(6, 4, 1.15, HEX[1])}</svg>`;
+  return `<svg width="52" height="46" viewBox="0 0 52 46" aria-hidden="true">${GOCCIA(0, 14, 0.95, HEX[2])}${GOCCIA(15, 0, 1.05, HEX[2])}${GOCCIA(28, 16, 0.95, HEX[2])}</svg>`;
+}
+// --- Mappa (solo se Leaflet è stato caricato: serve internet) ---
+const LEAF = typeof window.L !== "undefined";
+let marker = [], zone = [];
+if (LEAF) {
+  const map = L.map("map", {scrollWheelZoom: false});
+  // Le tessere OpenStreetMap richiedono una pagina web (http/https) con Referer valido:
+  // aperta come file dal disco (file://) la pagina mostra tragitto e gocce senza cartina di sfondo.
+  const web = location.protocol === "http:" || location.protocol === "https:";
+  if (web) L.tileLayer("https://tile.openstreetmap.org/{z}/{x}/{y}.png", {maxZoom: 18,
+    attribution: '&copy; <a href="https://www.openstreetmap.org/copyright">OpenStreetMap</a>'}).addTo(map);
+  else {
+    const avviso = L.control({position: "topright"});
+    avviso.onAdd = () => { const d = L.DomUtil.create("div", "senza-sfondo");
+      d.textContent = "Cartina di sfondo non disponibile aprendo il file dal disco: tragitto, gocce e ore sono comunque giusti. "
+        + "Per la cartina chiedi a Claude di aprire la mappa (usa un piccolo server locale)."; return d; };
+    avviso.addTo(map);
+  }
+  const ll = D.punti.map(p => [p.lat, p.lon]);
+  if (ll.length > 1) {
+    L.polyline(ll, {color: "#1c2430", weight: 3, opacity: .55, dashArray: "6 8"}).addTo(map);
+    map.fitBounds(L.latLngBounds(ll).pad(0.12));
+  } else map.setView(ll[0], 12);
+  const raggio = ll.length > 1 ? Math.max(1500, D.km * 1000 / (2 * (ll.length - 1))) : 2500;
+  zone = D.punti.map(p => L.circle([p.lat, p.lon], {radius: raggio, weight: 0, fillOpacity: 0, interactive: false}).addTo(map));
+  marker = D.punti.map((p, i) => L.marker([p.lat, p.lon], {icon: icona(null, false), title: p.nome, keyboard: true}).addTo(map)
+    .bindTooltip(esc(p.nome), {permanent: i === 0 || i === D.punti.length - 1, direction: "top", offset: [0, -22], className: "etich"}));
+} else {
+  document.getElementById("map").innerHTML = '<div class="offline">La cartina non si è caricata: serve la connessione a internet. ' +
+    'La barra delle ore qui sotto funziona lo stesso.</div>';
+}
+function icona(liv, forti) {
+  const w = liv === 2 ? 52 : 40, h = liv === 2 ? 46 : 44;
+  return L.divIcon({className: "", iconSize: [w, h], iconAnchor: [w / 2, h / 2],
+    html: `<div class="pin">${svgPunto(liv)}${forti ? '<span class="badge">💨</span>' : ''}</div>`});
+}
+function mostra(i) {
+  const o = D.ore[i]; const r = document.getElementById("ora"); r.value = i;
+  const etich = `Ore ${fmt(o.ora)}-${fmt(o.ora + 1)}`;
+  document.getElementById("ora-lbl").textContent = etich;
+  r.setAttribute("aria-valuetext", `${etich}: ${o.giudizio}`);
+  const st = document.getElementById("stato"); st.textContent = o.giudizio;
+  st.style.color = o.livello === null ? ND : (o.livello === 1 ? "#8a6500" : HEX[o.livello]);
+  D.punti.forEach((p, k) => {
+    if (!LEAF) return;
+    const liv = o.livelli[p.nome], v = o.per_punto[p.nome] || {};
+    const forti = v.raffiche !== undefined && v.raffiche !== null && v.raffiche >= D.raffiche_forti;
+    marker[k].setIcon(icona(liv, forti));
+    zone[k].setStyle({fillColor: liv === null || liv === undefined ? ND : HEX[liv], fillOpacity: liv ? 0.22 : 0.08});
+    marker[k].bindPopup(`<b>${esc(p.nome)}</b> · ore ${fmt(o.ora)}-${fmt(o.ora + 1)}<table class="dett">
+      <tr><td>Giudizio</td><td><b>${esc(testoLiv(liv))}</b></td></tr>
+      <tr><td>Probabilità</td><td>${v.prob ?? "-"}%</td></tr>
+      <tr><td>Ensemble</td><td>${v.ensemble_pct ?? "-"}%</td></tr>
+      <tr><td>Pioggia</td><td>${mmf(v.mm)} mm (modello più piovoso ${mmf(v.mm_max)})</td></tr>
+      <tr><td>Raffiche</td><td>${v.raffiche ?? "-"} km/h</td></tr>
+      <tr><td>Temperatura</td><td>${v.temp ?? "-"}°</td></tr></table>`);
+  });
+  document.querySelectorAll(".barra button").forEach((c, k) => {
+    c.setAttribute("aria-pressed", k === i ? "true" : "false");
+    if (k === i) c.scrollIntoView({block: "nearest", inline: "center", behavior: "smooth"});
+  });
+}
+const barra = document.getElementById("barra");
+D.ore.forEach((o, i) => {
+  const c = document.createElement("button"); c.type = "button";
+  c.className = o.livello === null ? "lnd" : "l" + o.livello;
+  const simb = (o.livello === null ? "?" : SIMB[o.livello]) + (o.raffiche_forti ? "💨" : "");
+  c.innerHTML = `<span>${fmt(o.ora)}</span><span aria-hidden="true">${simb}</span>`;
+  c.setAttribute("aria-label", `Ore ${fmt(o.ora)}-${fmt(o.ora + 1)}: ${o.giudizio}`);
+  c.title = `${fmt(o.ora)}-${fmt(o.ora + 1)}: ${o.giudizio}`;
+  c.onclick = () => mostra(i); barra.appendChild(c);
+});
+const r = document.getElementById("ora"); r.max = Math.max(0, D.ore.length - 1); r.oninput = e => mostra(+e.target.value);
+document.getElementById("sub").textContent = D.sottotitolo;
+const cons = document.getElementById("consiglio");
+if (D.migliore && D.consigliabile) cons.innerHTML = `<b>Momento migliore per spostarsi: ${fmt(D.migliore.dalle)}-${fmt(D.migliore.alle)}</b> · ${esc(D.migliore_testo)}`;
+else if (D.migliore) { cons.classList.add("no"); cons.innerHTML = `<b>Nessuna fascia davvero buona.</b> L'ora meno sfavorevole è ${fmt(D.migliore.dalle)}-${fmt(D.migliore.alle)} · ${esc(D.migliore_testo)}`; }
+else { cons.classList.add("no"); cons.textContent = "Dati insufficienti per consigliare un orario."; }
+document.getElementById("nota").textContent = D.nota;
+let iniz = 0; if (D.migliore) { const k = D.ore.findIndex(o => o.ora === D.migliore.dalle); if (k >= 0) iniz = k; }
+if (D.ore.length) mostra(iniz);
+</script></body></html>

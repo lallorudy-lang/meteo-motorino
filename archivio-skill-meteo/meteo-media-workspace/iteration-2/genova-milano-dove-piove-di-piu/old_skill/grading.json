@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Both tables have Min / Max for all 5 days."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": true,
+      "evidence": "Affidabilità column for all 5 days."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "6 models, iLMeteo, 3B Meteo, meteo.it, GenovaToday, Telepass Moveo, Meteo5."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": true,
+      "evidence": "Ends with 'Fonti:' list of 10 markdown links."
+    },
+    {
+      "text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.",
+      "passed": false,
+      "evidence": "Tables have no mm column: Genova Dom 8 ('qualche goccia'), Milano Dom 8 and Mer 11 ('asciutto') have no mm value."
+    },
+    {
+      "text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.",
+      "passed": true,
+      "evidence": "'A Genova, con buona probabilità.'"
+    },
+    {
+      "text": "Where the models disagree strongly on Genova's rain amounts, the answer gives a central estimate (median or a typical value) or explicitly separates the wetter models, rather than presenting only an average inflated by them.",
+      "passed": true,
+      "evidence": "Gives the 35 mm average but explicitly separates the two wetter models and says with the others the total is 15-20 mm."
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 1,
+    "total": 7,
+    "pass_rate": 0.86
+  },
+  "timing": {
+    "executor_duration_seconds": 79.9,
+    "total_duration_seconds": 79.9
+  }
+}

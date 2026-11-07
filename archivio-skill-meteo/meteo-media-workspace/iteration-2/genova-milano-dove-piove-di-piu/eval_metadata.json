@@ -1,0 +1,13 @@
+{
+  "eval_name": "genova-milano-dove-piove-di-piu",
+  "prompt": "Meteo dei prossimi 5 giorni a Genova e Milano, dove pioverà di più?",
+  "assertions": [
+    "The answer gives both a minimum and a maximum temperature for every requested day.",
+    "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+    "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+    "The answer ends with a list of sources given as markdown links.",
+    "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.",
+    "The answer clearly names which of the two cities will get more rain overall in the 5 days.",
+    "Where the models disagree strongly on Genova's rain amounts, the answer gives a central estimate (median or a typical value) or explicitly separates the wetter models, rather than presenting only an average inflated by them."
+  ]
+}

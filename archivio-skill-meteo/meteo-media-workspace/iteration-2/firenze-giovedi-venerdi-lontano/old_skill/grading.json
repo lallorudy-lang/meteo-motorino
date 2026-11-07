@@ -1,0 +1,54 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Gio min 14° max 18°; Ven min 14° max 17°."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": true,
+      "evidence": "'Affidabilità: bassa' for each day."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "4 models, iLMeteo, meteo.it, Nove Firenze, Meteo POP."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": true,
+      "evidence": "Ends with 'Fonti:' list of 7 markdown links."
+    },
+    {
+      "text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+      "passed": true,
+      "evidence": "giovedì 12 e venerdì 13 novembre."
+    },
+    {
+      "text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+      "passed": true,
+      "evidence": "'A 5-6 giorni la previsione è una tendenza... Conviene ricontrollare martedì o mercoledì'."
+    },
+    {
+      "text": "The answer gives a clear yes or no on whether to bring an umbrella.",
+      "passed": true,
+      "evidence": "'Risposta breve: sì, porta l'ombrello.'"
+    },
+    {
+      "text": "The answer says at what time of day the rain is expected to be heaviest on at least one of the two days.",
+      "passed": false,
+      "evidence": "No time of day given; it says timing will be clearer on Tuesday/Wednesday ('si capirà se piove tutto il giorno o solo in alcune ore')."
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 1,
+    "total": 8,
+    "pass_rate": 0.88
+  },
+  "timing": {
+    "executor_duration_seconds": 57.9,
+    "total_duration_seconds": 57.9
+  }
+}

@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Table temperature column: Gio 16-18 °C, Ven 15-18 °C (min-max range)."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": true,
+      "evidence": "'Quanto è affidabile' paragraph covers both days: 5-6 days out, rain almost certain, amounts and timing uncertain."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "ECMWF, GFS, ICON and the 51-member ECMWF ensemble."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": false,
+      "evidence": "Source given as plain italic text, no markdown links."
+    },
+    {
+      "text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+      "passed": true,
+      "evidence": "'giovedì 12 e venerdì 13 novembre'."
+    },
+    {
+      "text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+      "passed": true,
+      "evidence": "'mancano 5-6 giorni... possono ancora cambiare' and 'Mercoledì sera dai un'occhiata al sito del Centro Funzionale'."
+    },
+    {
+      "text": "The answer gives a clear yes or no on whether to bring an umbrella.",
+      "passed": true,
+      "evidence": "'Sì, porta l'ombrello.'"
+    }
+  ],
+  "summary": {
+    "passed": 6,
+    "failed": 1,
+    "total": 7,
+    "pass_rate": 0.86
+  },
+  "timing": {
+    "executor_duration_seconds": 36.2,
+    "total_duration_seconds": 36.2
+  }
+}

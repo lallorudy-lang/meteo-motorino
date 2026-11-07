@@ -1,0 +1,44 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Dom: 8 °C morning, 12-13 °C afternoon; Lun: 'fra 8 e 12 °C'."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": false,
+      "evidence": "No per-day reliability; only a generic 'le previsioni a due giorni possono ancora cambiare'."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "Names 4 models: ECMWF IFS, DWD ICON, NOAA GFS, ICON-2I."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": false,
+      "evidence": "Source given as plain italic text 'Fonte: Open-Meteo', no markdown links."
+    },
+    {
+      "text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).",
+      "passed": true,
+      "evidence": "'Domenica 8 (domani)' and 'Lunedì 9'."
+    },
+    {
+      "text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.",
+      "passed": true,
+      "evidence": "Domenica 'si va in bici senza pensieri'; Lunedì: dry in commute hours, bring a light rain jacket."
+    }
+  ],
+  "summary": {
+    "passed": 4,
+    "failed": 2,
+    "total": 6,
+    "pass_rate": 0.67
+  },
+  "timing": {
+    "executor_duration_seconds": 42.4,
+    "total_duration_seconds": 42.4
+  }
+}

@@ -1,0 +1,14 @@
+{
+  "eval_name": "firenze-giovedi-venerdi-lontano",
+  "prompt": "Giovedì e venerdì sono a Firenze per lavoro, mi serve l'ombrello?",
+  "assertions": [
+    "The answer gives both a minimum and a maximum temperature for every requested day.",
+    "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+    "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+    "The answer ends with a list of sources given as markdown links.",
+    "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+    "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+    "The answer gives a clear yes or no on whether to bring an umbrella.",
+    "The answer says at what time of day the rain is expected to be heaviest on at least one of the two days."
+  ]
+}

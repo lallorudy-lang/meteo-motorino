@@ -1,0 +1,1330 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Eval Review</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@500;600&family=Lora:wght@400;500&display=swap" rel="stylesheet">
+  <script src="https://cdn.sheetjs.com/xlsx-0.20.3/package/dist/xlsx.full.min.js" integrity="sha384-EnyY0/GSHQGSxSgMwaIPzSESbqoOLSexfnSMN2AP+39Ckmn92stwABZynq1JyzdT" crossorigin="anonymous"></script>
+  <style>
+    :root {
+      --bg: #faf9f5;
+      --surface: #ffffff;
+      --border: #e8e6dc;
+      --text: #141413;
+      --text-muted: #b0aea5;
+      --accent: #d97757;
+      --accent-hover: #c4613f;
+      --green: #788c5d;
+      --green-bg: #eef2e8;
+      --red: #c44;
+      --red-bg: #fceaea;
+      --header-bg: #141413;
+      --header-text: #faf9f5;
+      --radius: 6px;
+    }
+
+    * { box-sizing: border-box; margin: 0; padding: 0; }
+
+    body {
+      font-family: 'Lora', Georgia, serif;
+      background: var(--bg);
+      color: var(--text);
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+    }
+
+    /* ---- Header ---- */
+    .header {
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 1rem 2rem;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      flex-shrink: 0;
+    }
+    .header h1 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 1.25rem;
+      font-weight: 600;
+    }
+    .header .instructions {
+      font-size: 0.8rem;
+      opacity: 0.7;
+      margin-top: 0.25rem;
+    }
+    .header .progress {
+      font-size: 0.875rem;
+      opacity: 0.8;
+      text-align: right;
+    }
+
+    /* ---- Main content ---- */
+    .main {
+      flex: 1;
+      overflow-y: auto;
+      padding: 1.5rem 2rem;
+      display: flex;
+      flex-direction: column;
+      gap: 1.25rem;
+    }
+
+    /* ---- Sections ---- */
+    .section {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      flex-shrink: 0;
+    }
+    .section-header {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.75rem 1rem;
+      font-size: 0.75rem;
+      font-weight: 500;
+      text-transform: uppercase;
+      letter-spacing: 0.05em;
+      color: var(--text-muted);
+      border-bottom: 1px solid var(--border);
+      background: var(--bg);
+    }
+    .section-body {
+      padding: 1rem;
+    }
+
+    /* ---- Config badge ---- */
+    .config-badge {
+      display: inline-block;
+      padding: 0.2rem 0.625rem;
+      border-radius: 9999px;
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.6875rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.03em;
+      margin-left: 0.75rem;
+      vertical-align: middle;
+    }
+    .config-badge.config-primary {
+      background: rgba(33, 150, 243, 0.12);
+      color: #1976d2;
+    }
+    .config-badge.config-baseline {
+      background: rgba(255, 193, 7, 0.15);
+      color: #f57f17;
+    }
+
+    /* ---- Prompt ---- */
+    .prompt-text {
+      white-space: pre-wrap;
+      font-size: 0.9375rem;
+      line-height: 1.6;
+    }
+
+    /* ---- Outputs ---- */
+    .output-file {
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      overflow: hidden;
+    }
+    .output-file + .output-file {
+      margin-top: 1rem;
+    }
+    .output-file-header {
+      padding: 0.5rem 0.75rem;
+      font-size: 0.8rem;
+      font-weight: 600;
+      color: var(--text-muted);
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+    }
+    .output-file-header .dl-btn {
+      font-size: 0.7rem;
+      color: var(--accent);
+      text-decoration: none;
+      cursor: pointer;
+      font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', sans-serif;
+      font-weight: 500;
+      opacity: 0.8;
+    }
+    .output-file-header .dl-btn:hover {
+      opacity: 1;
+      text-decoration: underline;
+    }
+    .output-file-content {
+      padding: 0.75rem;
+      overflow-x: auto;
+    }
+    .output-file-content pre {
+      font-size: 0.8125rem;
+      line-height: 1.5;
+      white-space: pre-wrap;
+      word-break: break-word;
+      font-family: 'SF Mono', SFMono-Regular, Consolas, 'Liberation Mono', Menlo, monospace;
+    }
+    .output-file-content img {
+      max-width: 100%;
+      height: auto;
+      border-radius: 4px;
+    }
+    .output-file-content iframe {
+      width: 100%;
+      height: 600px;
+      border: none;
+    }
+    .output-file-content table {
+      border-collapse: collapse;
+      font-size: 0.8125rem;
+      width: 100%;
+    }
+    .output-file-content table td,
+    .output-file-content table th {
+      border: 1px solid var(--border);
+      padding: 0.375rem 0.5rem;
+      text-align: left;
+    }
+    .output-file-content table th {
+      background: var(--bg);
+      font-weight: 600;
+    }
+    .output-file-content .download-link {
+      display: inline-flex;
+      align-items: center;
+      gap: 0.5rem;
+      padding: 0.5rem 1rem;
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      color: var(--accent);
+      text-decoration: none;
+      font-size: 0.875rem;
+      cursor: pointer;
+    }
+    .output-file-content .download-link:hover {
+      background: var(--border);
+    }
+    .empty-state {
+      color: var(--text-muted);
+      font-style: italic;
+      padding: 2rem;
+      text-align: center;
+    }
+
+    /* ---- Feedback ---- */
+    .prev-feedback {
+      background: var(--bg);
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      padding: 0.625rem 0.75rem;
+      margin-top: 0.75rem;
+      font-size: 0.8125rem;
+      color: var(--text-muted);
+      line-height: 1.5;
+    }
+    .prev-feedback-label {
+      font-size: 0.7rem;
+      font-weight: 600;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+      margin-bottom: 0.25rem;
+      color: var(--text-muted);
+    }
+    .feedback-textarea {
+      width: 100%;
+      min-height: 100px;
+      padding: 0.75rem;
+      border: 1px solid var(--border);
+      border-radius: 4px;
+      font-family: inherit;
+      font-size: 0.9375rem;
+      line-height: 1.5;
+      resize: vertical;
+      color: var(--text);
+    }
+    .feedback-textarea:focus {
+      outline: none;
+      border-color: var(--accent);
+      box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+    }
+    .feedback-status {
+      font-size: 0.75rem;
+      color: var(--text-muted);
+      margin-top: 0.5rem;
+      min-height: 1.1em;
+    }
+
+    /* ---- Grades (collapsible) ---- */
+    .grades-toggle {
+      display: flex;
+      align-items: center;
+      cursor: pointer;
+      user-select: none;
+    }
+    .grades-toggle:hover {
+      color: var(--accent);
+    }
+    .grades-toggle .arrow {
+      margin-right: 0.5rem;
+      transition: transform 0.15s;
+      font-size: 0.75rem;
+    }
+    .grades-toggle .arrow.open {
+      transform: rotate(90deg);
+    }
+    .grades-content {
+      display: none;
+      margin-top: 0.75rem;
+    }
+    .grades-content.open {
+      display: block;
+    }
+    .grades-summary {
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+      display: flex;
+      align-items: center;
+      gap: 0.5rem;
+    }
+    .grade-badge {
+      display: inline-block;
+      padding: 0.125rem 0.5rem;
+      border-radius: 9999px;
+      font-size: 0.75rem;
+      font-weight: 600;
+    }
+    .grade-pass { background: var(--green-bg); color: var(--green); }
+    .grade-fail { background: var(--red-bg); color: var(--red); }
+    .assertion-list {
+      list-style: none;
+    }
+    .assertion-item {
+      padding: 0.625rem 0;
+      border-bottom: 1px solid var(--border);
+      font-size: 0.8125rem;
+    }
+    .assertion-item:last-child { border-bottom: none; }
+    .assertion-status {
+      font-weight: 600;
+      margin-right: 0.5rem;
+    }
+    .assertion-status.pass { color: var(--green); }
+    .assertion-status.fail { color: var(--red); }
+    .assertion-evidence {
+      color: var(--text-muted);
+      font-size: 0.75rem;
+      margin-top: 0.25rem;
+      padding-left: 1.5rem;
+    }
+
+    /* ---- View tabs ---- */
+    .view-tabs {
+      display: flex;
+      gap: 0;
+      padding: 0 2rem;
+      background: var(--bg);
+      border-bottom: 1px solid var(--border);
+      flex-shrink: 0;
+    }
+    .view-tab {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.625rem 1.25rem;
+      font-size: 0.8125rem;
+      font-weight: 500;
+      cursor: pointer;
+      border: none;
+      background: none;
+      color: var(--text-muted);
+      border-bottom: 2px solid transparent;
+      transition: all 0.15s;
+    }
+    .view-tab:hover { color: var(--text); }
+    .view-tab.active {
+      color: var(--accent);
+      border-bottom-color: var(--accent);
+    }
+    .view-panel { display: none; }
+    .view-panel.active { display: flex; flex-direction: column; flex: 1; overflow: hidden; }
+
+    /* ---- Benchmark view ---- */
+    .benchmark-view {
+      padding: 1.5rem 2rem;
+      overflow-y: auto;
+      flex: 1;
+    }
+    .benchmark-table {
+      border-collapse: collapse;
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      font-size: 0.8125rem;
+      width: 100%;
+      margin-bottom: 1.5rem;
+    }
+    .benchmark-table th, .benchmark-table td {
+      padding: 0.625rem 0.75rem;
+      text-align: left;
+      border: 1px solid var(--border);
+    }
+    .benchmark-table th {
+      font-family: 'Poppins', sans-serif;
+      background: var(--header-bg);
+      color: var(--header-text);
+      font-weight: 500;
+      font-size: 0.75rem;
+      text-transform: uppercase;
+      letter-spacing: 0.04em;
+    }
+    .benchmark-table tr:hover { background: var(--bg); }
+    .benchmark-table tr.benchmark-row-with { background: rgba(33, 150, 243, 0.06); }
+    .benchmark-table tr.benchmark-row-without { background: rgba(255, 193, 7, 0.06); }
+    .benchmark-table tr.benchmark-row-with:hover { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-without:hover { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-table tr.benchmark-row-avg { font-weight: 600; border-top: 2px solid var(--border); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-with { background: rgba(33, 150, 243, 0.12); }
+    .benchmark-table tr.benchmark-row-avg.benchmark-row-without { background: rgba(255, 193, 7, 0.12); }
+    .benchmark-delta-positive { color: var(--green); font-weight: 600; }
+    .benchmark-delta-negative { color: var(--red); font-weight: 600; }
+    .benchmark-notes {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 1rem;
+    }
+    .benchmark-notes h3 {
+      font-family: 'Poppins', sans-serif;
+      font-size: 0.875rem;
+      margin-bottom: 0.75rem;
+    }
+    .benchmark-notes ul {
+      list-style: disc;
+      padding-left: 1.25rem;
+    }
+    .benchmark-notes li {
+      font-size: 0.8125rem;
+      line-height: 1.6;
+      margin-bottom: 0.375rem;
+    }
+    .benchmark-empty {
+      color: var(--text-muted);
+      font-style: italic;
+      text-align: center;
+      padding: 3rem;
+    }
+
+    /* ---- Navigation ---- */
+    .nav {
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      padding: 1rem 2rem;
+      border-top: 1px solid var(--border);
+      background: var(--surface);
+      flex-shrink: 0;
+    }
+    .nav-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      color: var(--text);
+      transition: all 0.15s;
+    }
+    .nav-btn:hover:not(:disabled) {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .nav-btn:disabled {
+      opacity: 0.4;
+      cursor: not-allowed;
+    }
+    .done-btn {
+      font-family: 'Poppins', sans-serif;
+      padding: 0.5rem 1.5rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      color: var(--text);
+      cursor: pointer;
+      font-size: 0.875rem;
+      font-weight: 500;
+      transition: all 0.15s;
+    }
+    .done-btn:hover {
+      background: var(--bg);
+      border-color: var(--text-muted);
+    }
+    .done-btn.ready {
+      border: none;
+      background: var(--accent);
+      color: white;
+      font-weight: 600;
+    }
+    .done-btn.ready:hover {
+      background: var(--accent-hover);
+    }
+    /* ---- Done overlay ---- */
+    .done-overlay {
+      display: none;
+      position: fixed;
+      inset: 0;
+      background: rgba(0, 0, 0, 0.5);
+      z-index: 100;
+      justify-content: center;
+      align-items: center;
+    }
+    .done-overlay.visible {
+      display: flex;
+    }
+    .done-card {
+      background: var(--surface);
+      border-radius: 12px;
+      padding: 2rem 3rem;
+      text-align: center;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3);
+      max-width: 500px;
+    }
+    .done-card h2 {
+      font-size: 1.5rem;
+      margin-bottom: 0.5rem;
+    }
+    .done-card p {
+      color: var(--text-muted);
+      margin-bottom: 1.5rem;
+      line-height: 1.5;
+    }
+    .done-card .btn-row {
+      display: flex;
+      gap: 0.5rem;
+      justify-content: center;
+    }
+    .done-card button {
+      padding: 0.5rem 1.25rem;
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      background: var(--surface);
+      cursor: pointer;
+      font-size: 0.875rem;
+    }
+    .done-card button:hover {
+      background: var(--bg);
+    }
+    /* ---- Toast ---- */
+    .toast {
+      position: fixed;
+      bottom: 5rem;
+      left: 50%;
+      transform: translateX(-50%);
+      background: var(--header-bg);
+      color: var(--header-text);
+      padding: 0.625rem 1.25rem;
+      border-radius: var(--radius);
+      font-size: 0.875rem;
+      opacity: 0;
+      transition: opacity 0.3s;
+      pointer-events: none;
+      z-index: 200;
+    }
+    .toast.visible {
+      opacity: 1;
+    }
+  </style>
+</head>
+<body>
+  <div id="app" style="height:100vh; display:flex; flex-direction:column;">
+    <div class="header">
+      <div>
+        <h1>Eval Review: <span id="skill-name"></span></h1>
+        <div class="instructions">Review each output and leave feedback below. Navigate with arrow keys or buttons. When done, copy feedback and paste into Claude Code.</div>
+      </div>
+      <div class="progress" id="progress"></div>
+    </div>
+
+    <!-- View tabs (only shown when benchmark data exists) -->
+    <div class="view-tabs" id="view-tabs" style="display:none;">
+      <button class="view-tab active" onclick="switchView('outputs')">Outputs</button>
+      <button class="view-tab" onclick="switchView('benchmark')">Benchmark</button>
+    </div>
+
+    <!-- Outputs panel (qualitative review) -->
+    <div class="view-panel active" id="panel-outputs">
+    <div class="main">
+      <!-- Prompt -->
+      <div class="section">
+        <div class="section-header">Prompt <span class="config-badge" id="config-badge" style="display:none;"></span></div>
+        <div class="section-body">
+          <div class="prompt-text" id="prompt-text"></div>
+        </div>
+      </div>
+
+      <!-- Outputs -->
+      <div class="section">
+        <div class="section-header">Output</div>
+        <div class="section-body" id="outputs-body">
+          <div class="empty-state">No output files found</div>
+        </div>
+      </div>
+
+      <!-- Previous Output (collapsible) -->
+      <div class="section" id="prev-outputs-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="togglePrevOutputs()">
+            <span class="arrow" id="prev-outputs-arrow">&#9654;</span>
+            Previous Output
+          </div>
+        </div>
+        <div class="grades-content" id="prev-outputs-content"></div>
+      </div>
+
+      <!-- Grades (collapsible) -->
+      <div class="section" id="grades-section" style="display:none;">
+        <div class="section-header">
+          <div class="grades-toggle" onclick="toggleGrades()">
+            <span class="arrow" id="grades-arrow">&#9654;</span>
+            Formal Grades
+          </div>
+        </div>
+        <div class="grades-content" id="grades-content"></div>
+      </div>
+
+      <!-- Feedback -->
+      <div class="section">
+        <div class="section-header">Your Feedback</div>
+        <div class="section-body">
+          <textarea
+            class="feedback-textarea"
+            id="feedback"
+            placeholder="What do you think of this output? Any issues, suggestions, or things that look great?"
+          ></textarea>
+          <div class="feedback-status" id="feedback-status"></div>
+          <div class="prev-feedback" id="prev-feedback" style="display:none;">
+            <div class="prev-feedback-label">Previous feedback</div>
+            <div id="prev-feedback-text"></div>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div class="nav" id="outputs-nav">
+      <button class="nav-btn" id="prev-btn" onclick="navigate(-1)">&#8592; Previous</button>
+      <button class="done-btn" id="done-btn" onclick="showDoneDialog()">Submit All Reviews</button>
+      <button class="nav-btn" id="next-btn" onclick="navigate(1)">Next &#8594;</button>
+    </div>
+    </div><!-- end panel-outputs -->
+
+    <!-- Benchmark panel (quantitative stats) -->
+    <div class="view-panel" id="panel-benchmark">
+      <div class="benchmark-view" id="benchmark-content">
+        <div class="benchmark-empty">No benchmark data available. Run a benchmark to see quantitative results here.</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Done overlay -->
+  <div class="done-overlay" id="done-overlay">
+    <div class="done-card">
+      <h2>Review Complete</h2>
+      <p>Your feedback has been saved. Go back to your Claude Code session and tell Claude you're done reviewing.</p>
+      <div class="btn-row">
+        <button onclick="closeDoneDialog()">OK</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Toast -->
+  <div class="toast" id="toast"></div>
+
+  <script>
+    // ---- Embedded data (injected by generate_review.py) ----
+    const EMBEDDED_DATA = {"skill_name": "meteo-media", "runs": [{"id": "bologna-domani-bici-with_skill", "prompt": "Che tempo far\u00e0 a Bologna domani e luned\u00ec? Devo decidere se andare in bici al lavoro.", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Passi seguiti\n\n1. Letto `~/.claude/skills/meteo-media/SKILL.md`.\n2. Date: oggi \u00e8 sabato 2026-11-07, quindi \"domani\" = domenica 2026-11-08 e \"luned\u00ec\" = 2026-11-09.\n3. Script: `python3 ~/.claude/skills/meteo-media/scripts/previsioni.py \"Bologna\" --dal 2026-11-08 --al 2026-11-09`\n   - Dom 8: nuvoloso e asciutto, 0/6 modelli con pioggia, 7\u00b0/12\u00b0, affidabilit\u00e0 alta.\n   - Lun 9: pioggia debole, media 1,8 mm (UKMO 8,2 mm, gli altri 0-1,1 mm), 3/6 modelli \u22651 mm, 7\u00b0/11\u00b0, affidabilit\u00e0 bassa.\n4. Rilanciato con `--json` per cercare dati orari (non ci sono: solo totali giornalieri) e probabilit\u00e0 di pioggia (16-61% luned\u00ec). Letto `--help`.\n5. Tre WebSearch (modalit\u00e0 extended) mandate insieme:\n   - \"meteo Bologna domenica 8 luned\u00ec 9 novembre 2026 iLMeteo 3B Meteo\": iLMeteo Dom 6\u00b0/12\u00b0, Lun 8\u00b0/10\u00b0 47%; meteo.it nuvoloso. La pagina 3B Meteo era vecchia (scartata).\n   - \"previsioni meteo Italia tendenza 9 novembre 2026 perturbazione pioggia nord\": prime pioviggini al Nord luned\u00ec, peggioramento tra il 10 e il 13 al Centro-Nord (fonti del 6-7 novembre).\n   - \"ARPAE Emilia-Romagna bollettino meteo allerta 8 novembre 2026\": nessuna allerta regionale aggiornata trovata. Il bollettino nazionale del 6/11 non nomina l'Emilia-Romagna per l'8.\n6. Seguita la regola della skill sul modello isolato: la pioggia di luned\u00ec \u00e8 presentata come \"possibile e debole; solo UKMO la d\u00e0 pi\u00f9 forte\", senza dare la media come sicura.\n7. Scritta la risposta in italiano con un consiglio per la bici per ciascun giorno.\n"}, {"name": "risposta.md", "type": "text", "content": "# Previsioni meteo Bologna, domenica 8 e luned\u00ec 9 novembre\n\n**Come le ho calcolate:** ho fatto la media di 6 modelli meteorologici (europeo ECMWF, americano GFS, tedesco ICON, M\u00e9t\u00e9o-France, inglese UKMO e ItaliaMeteo-ARPAE) e l'ho confrontata con iLMeteo, meteo.it e le notizie sulla tendenza. L'affidabilit\u00e0 dice quanto i modelli sono d'accordo tra loro.\n\n## Bologna\n\n### Domenica 8 novembre: via libera per la bici\n- **Tempo:** nuvoloso ma asciutto. Nessuno dei 6 modelli prevede pioggia (probabilit\u00e0 0-3%).\n- **Temperature:** minima 7\u00b0 (tra 4\u00b0 e 8\u00b0 secondo i modelli), massima 12\u00b0.\n- **Vento:** debole, sotto i 10 km/h.\n- **Affidabilit\u00e0:** alta.\n\nCoincide con iLMeteo (6\u00b0 / 12\u00b0) e meteo.it (cielo in gran parte nuvoloso, senza pioggia).\n\n### Luned\u00ec 9 novembre: incerto, al massimo pioggia debole\n- **Tempo:** nuvoloso, con possibili piovaschi deboli. In media 2 mm in tutto il giorno, cio\u00e8 poca acqua.\n- **Pioggia secondo i modelli:** sono divisi. ECMWF, GFS e ICON danno da 0 a 0,5 mm, M\u00e9t\u00e9o-France e ItaliaMeteo-ARPAE circa 1 mm. Solo il modello inglese ne d\u00e0 di pi\u00f9 (8 mm). La probabilit\u00e0 di pioggia va dal 16% al 61% a seconda del modello.\n- **Temperature:** minima 7\u00b0 (4-8\u00b0), massima 11\u00b0 (10-13\u00b0).\n- **Vento:** debole.\n- **Affidabilit\u00e0:** bassa, perch\u00e9 i modelli non sono d'accordo.\n\niLMeteo d\u00e0 circa il 46-47% di probabilit\u00e0 di pioggia con 8\u00b0 / 10\u00b0. Meteo.it prevede cielo in gran parte nuvoloso. Quindi anche i siti la vedono come una giornata a rischio, non come una giornata di pioggia sicura.\n\n## Per la bici\n\n- **Domenica:** si va tranquilli. Serve solo una giacca: la mattina presto ci sono 6-7\u00b0.\n- **Luned\u00ec:** probabilmente si pu\u00f2 andare lo stesso, ma porta mantellina o giacca impermeabile. La pioggia pi\u00f9 probabile \u00e8 debole (pioviggine), non un acquazzone. I modelli che ho usato danno solo il totale del giorno, non gli orari. Ricontrolla domenica sera o luned\u00ec mattina prima di uscire: ECMWF, il modello di solito pi\u00f9 affidabile, la d\u00e0 asciutta, e un nuovo aggiornamento chiarir\u00e0 da che parte pende.\n\n## Il quadro generale\n- Domenica c'\u00e8 una pausa asciutta tra due fasi di maltempo.\n- Luned\u00ec aumentano le nuvole sul Nord e arrivano le prime pioviggini in Pianura Padana. \u00c8 l'inizio di un periodo pi\u00f9 piovoso.\n- Da marted\u00ec 10 a venerd\u00ec 13 le perturbazioni atlantiche dovrebbero portare piogge pi\u00f9 frequenti al Centro-Nord. Questa \u00e8 solo una tendenza: per la bici nel resto della settimana conviene ricontrollare giorno per giorno.\n- Non ho trovato allerte meteo della Protezione Civile per l'Emilia-Romagna per questi due giorni.\n\n**Fonti:**\n- [Open-Meteo](https://open-meteo.com/) (6 modelli: ECMWF, GFS, ICON, M\u00e9t\u00e9o-France, UKMO, ItaliaMeteo-ARPAE)\n- [iLMeteo \u2013 Bologna domani](https://www.ilmeteo.it/meteo/bologna/domani)\n- [iLMeteo \u2013 Bologna luned\u00ec 9](https://www.ilmeteo.it/meteo/bologna/3)\n- [meteo.it \u2013 Bologna](https://www.meteo.it/meteo/bologna-37006)\n- [iLMeteo \u2013 Meteo per la prossima settimana](https://www.ilmeteo.it/notizie/meteo-per-la-prossima-settimana-avvio-stabile-da-marted-10-due-fronti-atlantici-e-piogge-al-centronord-125002)\n- [Meteo POP \u2013 Settimana 9-15 novembre](https://www.meteopop.it/meteo-settimana-9-15-novembre-2026/)\n- [Protezione Civile \u2013 Bollettino di vigilanza](https://mappe.protezionecivile.gov.it/it/mappe-rischi/bollettino-di-vigilanza/)\n- [Allerta Meteo Emilia-Romagna](https://allertameteo.regione.emilia-romagna.it/allerte-e-bollettini)\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Dom 8: min 7\u00b0 max 12\u00b0; Lun 9: min 7\u00b0 max 11\u00b0."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Dom 'Affidabilit\u00e0: alta', Lun 'Affidabilit\u00e0: bassa'."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Names 6 models (ECMWF, GFS, ICON, M\u00e9t\u00e9o-France, UKMO, ItaliaMeteo-ARPAE) plus iLMeteo and meteo.it."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 8 markdown links."}, {"text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).", "passed": true, "evidence": "Sections for 'Domenica 8 novembre' and 'Luned\u00ec 9 novembre'."}, {"text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.", "passed": true, "evidence": "'Per la bici' section: Domenica 'si va tranquilli', Luned\u00ec 'probabilmente si pu\u00f2 andare... porta mantellina'."}], "summary": {"passed": 6, "failed": 0, "total": 6, "pass_rate": 1.0}, "timing": {"executor_duration_seconds": 67.3, "total_duration_seconds": 67.3}}}, {"id": "bologna-domani-bici-without_skill", "prompt": "Che tempo far\u00e0 a Bologna domani e luned\u00ec? Devo decidere se andare in bici al lavoro.", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Note sui passaggi\n\n1. Nessuna skill usata (baseline run). Nessuna WebSearch: dati presi direttamente dall'API Open-Meteo con curl.\n2. `curl` Open-Meteo /v1/forecast, Bologna (44.4949, 11.3426), timezone Europe/Rome, 2026-11-08 \u2192 2026-11-09: dati orari (temperatura, probabilit\u00e0 e quantit\u00e0 di pioggia, vento, raffiche, weather code) e giornalieri (modello predefinito best_match).\n3. `curl` Open-Meteo con `models=ecmwf_ifs025,icon_seamless,gfs_seamless,italia_meteo_arpae_icon_2i`: pioggia oraria negli orari da pendolare (7-9, 17-19), filtrata con un breve script python.\n4. `curl` dello stesso confronto tra modelli sui totali giornalieri (pioggia, minime e massime).\n5. Sintesi: domenica asciutta in tutti i modelli; luned\u00ec 0-1 mm, concentrati a met\u00e0 giornata; nebbia (codice WMO 45) da luned\u00ec sera. Ho fatto notare che domani \u00e8 domenica.\n\nFonti: api.open-meteo.com (ECMWF IFS 0.25\u00b0, DWD ICON, NOAA GFS, ICON-2I ARPAE/Italia Meteo).\n"}, {"name": "risposta.md", "type": "text", "content": "## Meteo a Bologna: domenica 8 e luned\u00ec 9 novembre\n\n**Domenica 8 (domani): asciutto, si va in bici senza pensieri.**\n- Cielo coperto o molto nuvoloso tutto il giorno, nessuna pioggia prevista. Tutti e quattro i modelli che ho guardato danno 0 mm.\n- Fa fresco: circa 8 \u00b0C al mattino, 12-13 \u00b0C nel primo pomeriggio, intorno agli 11 \u00b0C la sera.\n- Vento debole, raffiche sotto i 15 km/h.\n\n**Luned\u00ec 9: nuvoloso, al massimo una pioggerella leggera nelle ore centrali. Negli orari da pendolare dovrebbe restare asciutto.**\n- Tra le 7 e le 9 nessun modello prevede pioggia (al massimo 0,05 mm, cio\u00e8 niente). Probabilit\u00e0 intorno al 20%.\n- Tra le 11 e le 17 possono cadere qualche goccia o una pioggerella debole: la probabilit\u00e0 sale al 45-48%, ma il totale del giorno va da 0 a 1 mm a seconda del modello. Sono quantit\u00e0 minime.\n- Tra le 17 e le 19 \u00e8 quasi tutto asciutto (al massimo 0,1 mm per un solo modello), con probabilit\u00e0 intorno al 45%.\n- Temperature fra 8 e 12 \u00b0C, con poca escursione. Vento quasi assente.\n- Dalla sera possibile nebbia (dalle 21 circa): se torni tardi, accendi le luci.\n\n**In pratica:** in bici si pu\u00f2 andare tutti e due i giorni. Luned\u00ec porta una giacca impermeabile leggera o una mantellina nello zaino, per sicurezza al ritorno, e le luci per la sera. Luned\u00ec mattina conviene dare un'occhiata veloce al radar prima di partire: le previsioni a due giorni possono ancora cambiare.\n\n*Fonte: Open-Meteo, consultato sabato 7 novembre 2026. Modelli confrontati: ECMWF IFS, DWD ICON, NOAA GFS e ICON-2I di ARPAE/Italia Meteo.*\n\nPS: domani \u00e8 domenica. Se intendevi i prossimi due giorni lavorativi, luned\u00ec \u00e8 descritto sopra; per marted\u00ec posso controllare se ti serve.\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Dom: 8 \u00b0C morning, 12-13 \u00b0C afternoon; Lun: 'fra 8 e 12 \u00b0C'."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": false, "evidence": "No per-day reliability; only a generic 'le previsioni a due giorni possono ancora cambiare'."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Names 4 models: ECMWF IFS, DWD ICON, NOAA GFS, ICON-2I."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text 'Fonte: Open-Meteo', no markdown links."}, {"text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).", "passed": true, "evidence": "'Domenica 8 (domani)' and 'Luned\u00ec 9'."}, {"text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.", "passed": true, "evidence": "Domenica 'si va in bici senza pensieri'; Luned\u00ec: dry in commute hours, bring a light rain jacket."}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.67}, "timing": {"executor_duration_seconds": 42.4, "total_duration_seconds": 42.4}}}, {"id": "firenze-giovedi-venerdi-lontano-with_skill", "prompt": "Gioved\u00ec e venerd\u00ec sono a Firenze per lavoro, mi serve l'ombrello?", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Note sui passi fatti\n\n1. Letta la skill `~/.claude/skills/meteo-media/SKILL.md`.\n2. Date: oggi \u00e8 sabato 7/11/2026, quindi gioved\u00ec = 12/11 e venerd\u00ec = 13/11 (5-6 giorni da oggi, affidabilit\u00e0 attesa bassa). Localit\u00e0: Firenze, nessuna ambiguit\u00e0.\n3. Comando eseguito: `python3 ~/.claude/skills/meteo-media/scripts/previsioni.py \"Firenze\" --dal 2026-11-11 --al 2026-11-14` (ho aggiunto mercoled\u00ec e sabato come contesto, per un eventuale viaggio il giorno prima o un rientro il giorno dopo).\n   - Risultato: a quell'orizzonte rispondono 4 modelli (ECMWF, GFS, ICON, UKMO). Gio 12: 4/4 con pioggia, media 23,3 mm (da 15,4 a 37,3). Ven 13: 4/4, media 25,6 mm (da 20,2 a 32,0). Massime 17-18\u00b0, vento massimo 18-23 km/h, affidabilit\u00e0 bassa (5\u00b0-6\u00b0 giorno). La pioggia non dipende da un solo modello: li danno tutti.\n4. WebSearch (modalit\u00e0 extended), 3 ricerche in parallelo:\n   - \"previsioni meteo Firenze gioved\u00ec 12 venerd\u00ec 13 novembre 2026 iLMeteo 3BMeteo\": iLMeteo 16-19\u00b0 gioved\u00ec; meteo.it temporali gio e ven; AccuWeather nuvoloso, 25%. La pagina 3BMeteo era di circa 2 anni fa ed \u00e8 stata **scartata**.\n   - \"tendenza meteo prossima settimana perturbazione Italia 12-13 novembre 2026\": meteo.it, iLMeteo, greenMe/Meteored, idealista (7/11) e Tempo Italia descrivono una fase perturbata sul Centro-Nord tirrenico il 12-13 e un secondo impulso il 13-15.\n   - \"meteo Toscana prossimi giorni novembre 2026 allerta pioggia LaMMA\": nessuna allerta trovata. Il bollettino MeteoWeb del 3/11 (riferito a ven 6) \u00e8 stato **scartato** perch\u00e9 si riferisce a giorni passati. Le pagine LaMMA erano in cache con date non verificabili o molto vecchie (Pistoia di 648 giorni fa) e anche il bollettino 6-15 giorni (\"stabile fino al 16\") non era datato: **non usati** come dati. AnconaToday/Meteored: gli accumuli maggiori sono su Liguria e alta Toscana.\n5. Disaccordi riportati nella risposta: AccuWeather (25%) e la possibilit\u00e0 di accumuli minori a Firenze rispetto all'alta Toscana. Affidabilit\u00e0 lasciata \"bassa\".\n6. Scritti `risposta.md` e `note.md`.\n"}, {"name": "risposta.md", "type": "text", "content": "# Previsioni meteo Firenze, gioved\u00ec 12 e venerd\u00ec 13 novembre\n\n**In breve: s\u00ec, porta l'ombrello.** Tutti i modelli meteo danno pioggia in tutti e due i giorni, e i principali siti italiani parlano di una perturbazione atlantica sul Centro-Nord proprio tra gioved\u00ec e venerd\u00ec. Mancano per\u00f2 5-6 giorni: la pioggia \u00e8 probabile, ma quanta ne cadr\u00e0 e a che ora \u00e8 ancora incerto.\n\n**Come le ho calcolate:** ho fatto la media dei modelli meteorologici che arrivano fino a quelle date (4 dei 6 che uso di solito: europeo ECMWF, americano GFS, tedesco ICON e inglese UKMO). Poi ho confrontato il risultato con iLMeteo, meteo.it e altri siti. L'affidabilit\u00e0 indica quanto i modelli sono d'accordo e quanto \u00e8 lontano il giorno.\n\n## Firenze\n\n| Giorno | Tempo | Min / Max | Affidabilit\u00e0 |\n|---|---|---|---|\n| Mer 11 (se arrivi il giorno prima) | Pioggia debole a tratti, circa 4 mm | 14\u00b0 / 19\u00b0 | media |\n| **Gio 12** | **Pioggia forte, possibili temporali**: circa 23 mm in media (da 15 a 37 secondo il modello) | 14\u00b0 / 18\u00b0 | bassa |\n| **Ven 13** | **Pioggia forte, possibili temporali**: circa 26 mm in media (da 20 a 32) | 14\u00b0 / 17\u00b0 | bassa |\n| Sab 14 (se resti) | Ancora pioggia, pi\u00f9 fresco | 10\u00b0 / 15\u00b0 | bassa |\n\nIl vento sar\u00e0 debole o moderato (massimo circa 20-25 km/h), quindi un ombrello normale va bene. Le temperature saranno miti per novembre: basta una giacca leggera, meglio se impermeabile. Se puoi, metti anche scarpe che non temono l'acqua.\n\n**Cosa dicono i siti:**\n- **Confermano:** [meteo.it](https://www.meteo.it/meteo/firenze-48017) segna temporali sia gioved\u00ec sia venerd\u00ec. iLMeteo descrive una fase \"marcatamente perturbata\" sul Centro-Nord, soprattutto sul versante tirrenico (quindi anche la Toscana). Secondo Meteored il peggioramento pi\u00f9 forte arriva gioved\u00ec dal pomeriggio-sera.\n- **Sulle temperature:** [iLMeteo](https://www.ilmeteo.it/meteo/firenze) e meteo.it danno 16-19\u00b0 per gioved\u00ec, poco sopra la media dei modelli (14-18\u00b0).\n- **Non sono d'accordo:** [AccuWeather](https://www.accuweather.com/it/it/florence/216189/10-day-weather-forecast/216189) d\u00e0 soltanto cielo nuvoloso con il 25% di probabilit\u00e0 di pioggia. Secondo Meteored le piogge pi\u00f9 abbondanti (oltre 100 mm) cadrebbero in Liguria e nell'alta Toscana, e Firenze ne prenderebbe di meno.\n\n## Il quadro generale\n\n- **Mercoled\u00ec 11** \u00e8 una giornata di transizione con poca pioggia. **Gioved\u00ec 12 e venerd\u00ec 13** sono i giorni centrali della perturbazione: tutti i modelli prevedono pioggia, con accumuli importanti.\n- Dopo il 13 potrebbe arrivare un secondo impulso, cio\u00e8 una nuova ondata di pioggia, con piogge anche nel weekend del 14-15.\n- **Al momento non ho trovato allerte meteo** della Protezione Civile per la Toscana. Per date cos\u00ec lontane \u00e8 normale: le allerte escono uno o due giorni prima.\n- Il dato su cui c'\u00e8 pi\u00f9 accordo \u00e8 *che* piover\u00e0. Quanto e a che ora resta incerto. **Conviene ricontrollare marted\u00ec 10 o mercoled\u00ec 11**, quando la previsione sar\u00e0 molto pi\u00f9 affidabile e potrebbe esserci un bollettino di allerta.\n\n**Fonti:**\n- [Open-Meteo](https://open-meteo.com/) (modelli ECMWF, GFS, ICON, UKMO)\n- [iLMeteo \u2013 Firenze](https://www.ilmeteo.it/meteo/firenze)\n- [iLMeteo \u2013 Meteo per la prossima settimana](https://www.ilmeteo.it/notizie/meteo-per-la-prossima-settimana-avvio-stabile-da-marted-10-due-fronti-atlantici-e-piogge-al-centronord-125002)\n- [meteo.it \u2013 Firenze](https://www.meteo.it/meteo/firenze-48017)\n- [meteo.it \u2013 Nuove piogge in arrivo fino al weekend](https://www.meteo.it/notizie/meteo-piogge-in-arrivo-weekend-previsioni-b7103620)\n- [greenMe \u2013 Torna il maltempo sull'Italia](https://www.greenme.it/ambiente/meteo/meteo-torna-il-maltempo-sullitalia-piogge-intense-e-temperature-fino-a-26c-ecco-dove-e-quando/)\n- [AnconaToday \u2013 Estate di San Martino all'insegna del maltempo (Meteored)](https://anconatoday.it/meteo/estate-san-martino-2026-novembre-meteored-previsioni-piogge.html)\n- [idealista \u2013 Il maltempo accelera dal 13 novembre](https://www.idealista.it/news/finanza/casa/2026/11/07/499960-alti-e-bassi-in-settimana-il-maltempo-accelera-dal-13-novembre)\n- [Tempo Italia \u2013 Atlantico molto attivo dal 12-13 novembre](https://www.tempoitalia.it/2026/11/meteo-news/atlantico-molto-attivo-dal-12-13-novembre-potrebbero-arrivare-piogge-frequenti-in-italia/)\n- [AccuWeather \u2013 Firenze](https://www.accuweather.com/it/it/florence/216189/10-day-weather-forecast/216189)\n- [LaMMA Toscana \u2013 Firenze](https://www.lamma.toscana.it/meteo/meteo-firenze)\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Table: Gio 12 14\u00b0/18\u00b0, Ven 13 14\u00b0/17\u00b0."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Table column Affidabilit\u00e0: 'bassa' for both days."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "ECMWF, GFS, ICON, UKMO plus iLMeteo, meteo.it, Meteored, AccuWeather."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 11 markdown links."}, {"text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.", "passed": true, "evidence": "'gioved\u00ec 12 e venerd\u00ec 13 novembre' in title."}, {"text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.", "passed": true, "evidence": "'Mancano per\u00f2 5-6 giorni... incerto' and 'Conviene ricontrollare marted\u00ec 10 o mercoled\u00ec 11'."}, {"text": "The answer gives a clear yes or no on whether to bring an umbrella.", "passed": true, "evidence": "'In breve: s\u00ec, porta l'ombrello.'"}], "summary": {"passed": 7, "failed": 0, "total": 7, "pass_rate": 1.0}, "timing": {"executor_duration_seconds": 67.5, "total_duration_seconds": 67.5}}}, {"id": "firenze-giovedi-venerdi-lontano-without_skill", "prompt": "Gioved\u00ec e venerd\u00ec sono a Firenze per lavoro, mi serve l'ombrello?", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Passi seguiti\n\n1. Date ricavate: oggi \u00e8 sabato 2026-11-07, quindi gioved\u00ec = 2026-11-12 e venerd\u00ec = 2026-11-13 (5-6 giorni di anticipo).\n2. `curl` all'API Open-Meteo forecast (Firenze 43.77N 11.26E, timezone Europe/Rome), dati giornalieri dal 07 al 14/11: weather_code, precipitation_sum, precipitation_probability_max, temperature min/max, vento.\n   - Gio 12: codice 95 (temporale), 21.8 mm, 90%, 15.7-18.4 \u00b0C\n   - Ven 13: codice 95, 20.2 mm, 92%, 14.6-17.5 \u00b0C\n3. `curl` a Open-Meteo con i singoli modelli per confrontarli:\n   - ECMWF IFS: 18.8 / 27.0 mm, 24 h di pioggia su 24\n   - GFS: 37.3 / 23.1 mm\n   - ICON: 21.6 / 20.2 mm\n   - M\u00e9t\u00e9o-France: nessun dato a questa distanza\n4. `curl` all'API ensemble di Open-Meteo (ECMWF IFS, 51 membri): pioggia > 1 mm in 51 membri su 51 per entrambi i giorni; media 15.2 mm (gio) e 24.9 mm (ven).\n5. Conclusione: pioggia quasi certa in entrambi i giorni, quantit\u00e0 e orari ancora incerti. Ho consigliato di ricontrollare mercoled\u00ec sera (CFR Toscana per eventuali allerte).\n\nNon ho usato WebSearch n\u00e9 la skill meteo-media.\n"}, {"name": "risposta.md", "type": "text", "content": "**S\u00ec, porta l'ombrello.** Per gioved\u00ec 12 e venerd\u00ec 13 novembre a Firenze le previsioni danno pioggia su entrambi i giorni, con possibili temporali.\n\n| Giorno | Cielo | Pioggia prevista | Probabilit\u00e0 | Temperature |\n|---|---|---|---|---|\n| Gioved\u00ec 12 | piogge e temporali | circa 20 mm (i modelli vanno da 19 a 37 mm) | circa 90% | 16-18 \u00b0C |\n| Venerd\u00ec 13 | piogge e temporali | circa 20-27 mm | circa 90% | 15-18 \u00b0C |\n\n**Quanto \u00e8 affidabile:** mancano 5-6 giorni, quindi orari e quantit\u00e0 precise possono ancora cambiare. Il segnale per\u00f2 \u00e8 molto netto: i tre modelli principali (europeo ECMWF, americano GFS, tedesco ICON) danno tutti pioggia abbondante su tutti e due i giorni. Delle 51 simulazioni dell'ensemble europeo, nessuna d\u00e0 un giorno asciutto. Che piova \u00e8 quasi certo. Quanto piover\u00e0 e a che ora, meno.\n\n**Consigli pratici:**\n- Ombrello robusto, che regga anche un po' di vento. Meglio ancora scarpe che non temono l'acqua.\n- Fa mite per novembre (circa 15-18 \u00b0C): basta una giacca leggera impermeabile, niente cappotto pesante.\n- Con questi accumuli la Toscana a volte emette un'allerta meteo. Mercoled\u00ec sera dai un'occhiata al sito del Centro Funzionale della Regione Toscana (cfr.toscana.it) o a un'app meteo, per sapere a che ore piove di pi\u00f9 e se ci sono disagi per treni o strade.\n\n*Fonte: previsioni Open-Meteo (modelli ECMWF, GFS, ICON ed ensemble ECMWF), consultate sabato 7 novembre 2026.*\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Table temperature column: Gio 16-18 \u00b0C, Ven 15-18 \u00b0C (min-max range)."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "'Quanto \u00e8 affidabile' paragraph covers both days: 5-6 days out, rain almost certain, amounts and timing uncertain."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "ECMWF, GFS, ICON and the 51-member ECMWF ensemble."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text, no markdown links."}, {"text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.", "passed": true, "evidence": "'gioved\u00ec 12 e venerd\u00ec 13 novembre'."}, {"text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.", "passed": true, "evidence": "'mancano 5-6 giorni... possono ancora cambiare' and 'Mercoled\u00ec sera dai un'occhiata al sito del Centro Funzionale'."}, {"text": "The answer gives a clear yes or no on whether to bring an umbrella.", "passed": true, "evidence": "'S\u00ec, porta l'ombrello.'"}], "summary": {"passed": 6, "failed": 1, "total": 7, "pass_rate": 0.86}, "timing": {"executor_duration_seconds": 36.2, "total_duration_seconds": 36.2}}}, {"id": "genova-milano-dove-piove-di-piu-with_skill", "prompt": "Meteo dei prossimi 5 giorni a Genova e Milano, dove piover\u00e0 di pi\u00f9?", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Passi seguiti\n\n1. Letto `~/.claude/skills/meteo-media/SKILL.md`.\n2. Interpretato \"prossimi 5 giorni\" come sabato 7 - mercoled\u00ec 11 novembre 2026 (oggi \u00e8 sabato 7).\n3. Lanciato lo script dei modelli (Open-Meteo, 6 modelli):\n   - `python3 ~/.claude/skills/meteo-media/scripts/previsioni.py \"Genova\" --dal 2026-11-07 --al 2026-11-11`\n   - `python3 ~/.claude/skills/meteo-media/scripts/previsioni.py \"Milano\" --dal 2026-11-07 --al 2026-11-11`\n   - Per Milano lo script ha scelto Milano (Lombardia). L'alternativa omonima in Umbria \u00e8 stata scartata.\n4. Sommato a mano la pioggia giornaliera: media dei modelli Genova circa 35 mm, Milano circa 9 mm. Fatto anche il totale per ogni modello: 4 modelli su 6 danno pi\u00f9 pioggia a Genova. GFS d\u00e0 poco in entrambe le citt\u00e0; ItaliaMeteo arriva solo a luned\u00ec.\n5. Notato il forte disaccordo a Genova luned\u00ec e marted\u00ec: M\u00e9t\u00e9o-France e UKMO danno 35-39 mm, ECMWF e ICON 4-7 mm. L'ho segnalato, senza presentare la media come sicura.\n6. Fatte 3 WebSearch in modalit\u00e0 extended, nello stesso turno:\n   - \"meteo Genova previsioni 9 10 novembre 2026 pioggia allerta Liguria\"\n   - \"meteo Milano previsioni prossimi giorni novembre 2026 iLMeteo 3bmeteo\"\n   - \"tendenza meteo prossima settimana 9-11 novembre 2026 perturbazione nord Italia\"\n7. Controllate le date delle pagine. Scartate le pagine MeteoLive (1, 3 e 6 novembre, gi\u00e0 passate) e quelle con solo medie climatiche (Dove e Quando, Meteomi). La pagina AllertaLiguria era ferma al 5 novembre, e nella risposta lo dico.\n8. Confronto con i siti:\n   - Milano: Telepass Moveo conferma sabato con pioggia debole e domenica asciutta.\n   - Genova: iLMeteo d\u00e0 pioggia debole luned\u00ec, quindi meno dei modelli che prevedono pioggia forte. Per questo ho abbassato l'affidabilit\u00e0 di luned\u00ec da alta a media.\n   - Contesto: il Quotidiano Nazionale prevede forti precipitazioni al Centro-Nord marted\u00ec 10; Meteo.it piogge intense e temporali sul Tirreno mercoled\u00ec 11; tendenza di una perturbazione pi\u00f9 forte il 12-13.\n9. Scritta la risposta seguendo la struttura della skill: tabelle per citt\u00e0, tabella di confronto per modello (serve a rispondere a \"dove piove di pi\u00f9\"), quadro generale e fonti.\n\nFonti usate: Open-Meteo; iLMeteo (pagina Genova e notizie); Meteo.it; Quotidiano Nazionale; Genova24; Telepass Moveo; Meteo5; ilMeteo.net; AllertaLiguria.\n"}, {"name": "risposta.md", "type": "text", "content": "# Previsioni meteo Genova e Milano, sabato 7 - mercoled\u00ec 11 novembre\n\n**In breve: piover\u00e0 di pi\u00f9 a Genova.** Nei 5 giorni la media dei modelli d\u00e0 a Genova circa **35 mm** di pioggia e a Milano circa **9 mm**, quasi quattro volte tanto. A Genova piove soprattutto da luned\u00ec a mercoled\u00ec. A Milano piove soprattutto oggi, poi solo poco.\n\n**Come le ho calcolate:** ho fatto la media di 6 modelli meteorologici (ECMWF, GFS, ICON, M\u00e9t\u00e9o-France, UKMO, ItaliaMeteo) e l'ho confrontata con i siti meteo italiani. L'affidabilit\u00e0 dice quanto i modelli sono d'accordo tra loro.\n\n## Genova\n\n| Giorno | Tempo | Min / Max | Affidabilit\u00e0 |\n|---|---|---|---|\n| Sab 7 | Nuvoloso, al massimo qualche goccia | 9\u00b0 / 14\u00b0 | media |\n| Dom 8 | Nuvoloso, pioggia debole possibile, con schiarite | 9\u00b0 / 15\u00b0 | media |\n| **Lun 9** | **Pioggia, forse forte (circa 15 mm in media, da 0 a 39 secondo il modello)** | 11\u00b0 / 14\u00b0 | media |\n| **Mar 10** | **Pioggia, forse forte (circa 13 mm in media, da 2 a 36 secondo il modello)** | 12\u00b0 / 15\u00b0 | bassa |\n| **Mer 11** | **Pioggia, possibili temporali (circa 6 mm)** | 13\u00b0 / 16\u00b0 | media |\n\nVento debole o moderato (massimo 25 km/h, sabato).\n\nAttenzione: i modelli sono d'accordo che a Genova piover\u00e0 da luned\u00ec a mercoled\u00ec, ma non su quanto. Due modelli (M\u00e9t\u00e9o-France e UKMO, l'inglese) prevedono 35-39 mm al giorno luned\u00ec e marted\u00ec, cio\u00e8 pioggia forte. Il modello europeo (ECMWF) e il tedesco (ICON) restano su 4-7 mm al giorno, cio\u00e8 pioggia moderata. Per luned\u00ec iLMeteo d\u00e0 solo pioggia debole. Per questo ho abbassato l'affidabilit\u00e0 di luned\u00ec da \"alta\" a \"media\". Il totale dei 5 giorni va quindi da circa 20 mm (ECMWF, ICON) a pi\u00f9 di 70 mm (M\u00e9t\u00e9o-France, UKMO).\n\n## Milano\n\n| Giorno | Tempo | Min / Max | Affidabilit\u00e0 |\n|---|---|---|---|\n| Sab 7 | Pioggia debole o moderata (circa 5 mm), freddo | 9\u00b0 / 11\u00b0 | alta |\n| Dom 8 | Nuvoloso ma asciutto, schiarite | 7\u00b0 / 13\u00b0 | alta |\n| Lun 9 | Pioggia debole possibile (circa 1 mm), modelli divisi | 7\u00b0 / 10\u00b0 | bassa |\n| Mar 10 | Pioggia debole (circa 3 mm) | 8\u00b0 / 12\u00b0 | media |\n| Mer 11 | Nuvoloso, asciutto o quasi | 9\u00b0 / 12\u00b0 | media |\n\nVento debole tutti i giorni (massimo 10 km/h).\n\nTelepass Moveo conferma sabato coperto con pioggia debole e domenica in miglioramento, con il sereno che torna. Meteo5 d\u00e0 pochi millimetri tra luned\u00ec e mercoled\u00ec, come i modelli.\n\n## Chi prende pi\u00f9 pioggia, modello per modello\n\n| Modello | Genova (5 giorni) | Milano (5 giorni) |\n|---|---|---|\n| ECMWF (europeo) | 20 mm | 8 mm |\n| ICON (tedesco) | 17 mm | 12 mm |\n| M\u00e9t\u00e9o-France | 73 mm (4 giorni) | 9 mm (4 giorni) |\n| UKMO (inglese) | 73 mm | 11 mm |\n| GFS (americano) | 2 mm | 4 mm |\n| ItaliaMeteo-ARPAE | 1 mm (solo 3 giorni) | 6 mm (solo 3 giorni) |\n\nQuattro modelli su sei danno pi\u00f9 pioggia a Genova. Gli unici due che dicono il contrario sono il GFS, che vede pochissima pioggia in entrambe le citt\u00e0, e ItaliaMeteo, che copre solo fino a luned\u00ec, quando a Genova la pioggia deve ancora arrivare. La risposta \"Genova\" \u00e8 quindi solida. Quanta pioggia cadr\u00e0 davvero a Genova invece \u00e8 incerto.\n\n## Il quadro generale\n\n- **Oggi (sabato)** piove a Milano, mentre Genova resta quasi asciutta. **Domenica** \u00e8 asciutta in tutte e due le citt\u00e0: la giornata migliore per stare all'aperto.\n- **Da luned\u00ec sera a mercoled\u00ec** arriva una perturbazione dall'Atlantico, con piogge al Centro-Nord. Il Quotidiano Nazionale parla di forti precipitazioni al Centro-Nord marted\u00ec. Meteo.it prevede per mercoled\u00ec (San Martino) piogge intense e temporali sulle coste tirreniche. La Liguria \u00e8 la pi\u00f9 esposta, Milano molto meno.\n- **Allerte:** al momento non ho trovato allerte attive per la Liguria. La pagina di AllertaLiguria che ho trovato per\u00f2 era ferma al 5 novembre. Se ti sposti a Genova luned\u00ec o marted\u00ec, controlla [AllertaLiguria](https://allertaliguria.regione.liguria.it/allerta_protezione_civile.php) domenica sera o luned\u00ec mattina.\n- **Dopo i 5 giorni:** per gioved\u00ec 12 e venerd\u00ec 13 i siti parlano di una perturbazione ancora pi\u00f9 intensa al Centro-Nord. \u00c8 solo una tendenza: conviene ricontrollare a inizio settimana.\n\n**Fonti:**\n- [Open-Meteo](https://open-meteo.com/) (6 modelli: ECMWF, GFS, ICON, M\u00e9t\u00e9o-France, UKMO, ItaliaMeteo-ARPAE)\n- [iLMeteo \u2013 Meteo Genova](https://www.ilmeteo.it/meteo/genova/3)\n- [iLMeteo \u2013 Meteo per la prossima settimana](https://www.ilmeteo.it/notizie/meteo-per-la-prossima-settimana-avvio-stabile-da-marted-10-due-fronti-atlantici-e-piogge-al-centronord-125002)\n- [Meteo.it \u2013 Da luned\u00ec 9 maltempo a tratti intenso](https://www.meteo.it/notizie/meteo-da-lunedi-maltempo-intenso-e-clima-mite-al-centrosud-912b57d0)\n- [Meteo.it \u2013 Previsioni Genova](https://www.meteo.it/meteo/genova-oggi-10025)\n- [Quotidiano Nazionale \u2013 Marted\u00ec forti precipitazioni al Centro Nord](https://www.quotidiano.net/meteo/sabato-freddo-e-piovoso-da-domenica-i-venti-di-libeccio-e-scirocco-m5715o02)\n- [Genova24 \u2013 Fine settimana variabile con ampie schiarite](https://www.genova24.it/2026/11/meteo-giornata-di-nuvole-e-pioggia-fine-settimana-variabile-ma-con-ampie-schiarite-479991)\n- [Telepass Moveo \u2013 Meteo Milano weekend 6-8 novembre](https://moveo.telepass.com/meteo-milano-weekend-6-8-novembre-2026/)\n- [Meteo5 \u2013 Milano novembre 2026](https://www.meteo5.com/europe/italy/lombardy/milan?page=month&month=November)\n- [ilMeteo.net \u2013 Piogge a pi\u00f9 riprese la prossima settimana](https://www.ilmeteo.net/notizie/previsioni/porta-atlantica-aperta-piogge-a-piu-riprese-sull-italia-la-prossima-settimana.html)\n- [AllertaLiguria \u2013 Protezione Civile Regione Liguria](https://allertaliguria.regione.liguria.it/allerta_protezione_civile.php)\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Both tables have Min / Max for all 5 days."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Affidabilit\u00e0 column for all 5 days in both tables."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "6 models named plus iLMeteo, meteo.it, Quotidiano Nazionale, Telepass Moveo, Meteo5."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 11 markdown links."}, {"text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.", "passed": false, "evidence": "mm missing for several days: Genova Sab 7 ('qualche goccia') and Dom 8, Milano Dom 8 and Mer 11 have no mm value."}, {"text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.", "passed": true, "evidence": "'In breve: piover\u00e0 di pi\u00f9 a Genova' (35 mm vs 9 mm)."}], "summary": {"passed": 5, "failed": 1, "total": 6, "pass_rate": 0.83}, "timing": {"executor_duration_seconds": 87.6, "total_duration_seconds": 87.6}}}, {"id": "genova-milano-dove-piove-di-piu-without_skill", "prompt": "Meteo dei prossimi 5 giorni a Genova e Milano, dove piover\u00e0 di pi\u00f9?", "eval_id": null, "outputs": [{"name": "note.md", "type": "text", "content": "# Passi seguiti\n\n1. Nessuna skill usata (baseline). Nessuna ricerca web: ho usato direttamente l'API pubblica gratuita di Open-Meteo.\n2. `curl` su `https://api.open-meteo.com/v1/forecast` per Genova (44.4056, 8.9463) e Milano (45.4642, 9.19), `forecast_days=5`, `timezone=Europe/Rome`, dati giornalieri: weather_code, temperature_2m_max/min, precipitation_sum, precipitation_probability_max, precipitation_hours, wind_speed_10m_max. Modello di riferimento (\"best match\").\n3. Seconda chiamata `curl` con `models=ecmwf_ifs025,icon_eu,meteofrance_seamless` (solo precipitation_sum) per verificare se i modelli sono d'accordo; totali calcolati con un piccolo script python3.\n4. Codici WMO tradotti a mano (3 coperto, 45 nebbia, 61 pioggia debole, 80 rovesci, 95 temporale); totali di pioggia sommati sui 5 giorni (sab 7 - mer 11 novembre 2026).\n5. Risultato: Genova 15,8 mm contro Milano 11,8 mm (best match); ECMWF e M\u00e9t\u00e9o-France confermano Genova, ICON-EU le d\u00e0 quasi pari.\n"}, {"name": "risposta.md", "type": "text", "content": "# Meteo Genova e Milano, da sabato 7 a mercoled\u00ec 11 novembre 2026\n\n**In breve: piover\u00e0 di pi\u00f9 a Genova.** Il modello di riferimento d\u00e0 circa **16 mm** in totale a Genova e **12 mm** a Milano. A Genova la pioggia si concentra da luned\u00ec a mercoled\u00ec, con temporali possibili mercoled\u00ec. Milano ha la giornata pi\u00f9 bagnata oggi, poi qualche pioggia luned\u00ec e marted\u00ec.\n\n## Genova\n\n| Giorno | Cielo | Min / Max | Pioggia | Probabilit\u00e0 |\n|---|---|---|---|---|\n| Sab 7 | Coperto | 10 / 14 \u00b0C | 0 mm | 23% |\n| Dom 8 | Coperto | 10 / 16 \u00b0C | 0 mm | 13% |\n| Lun 9 | Pioggia debole (circa 14 ore) | 13 / 13 \u00b0C | 5,9 mm | 74% |\n| Mar 10 | Rovesci | 13 / 14 \u00b0C | 4,6 mm | 88% |\n| Mer 11 | Temporali | 14 / 16 \u00b0C | 5,3 mm | 72% |\n| **Totale** | | | **15,8 mm** | |\n\n## Milano\n\n| Giorno | Cielo | Min / Max | Pioggia | Probabilit\u00e0 |\n|---|---|---|---|---|\n| Sab 7 | Pioggia debole | 8 / 11 \u00b0C | 4,4 mm | 98% |\n| Dom 8 | Nebbia, asciutto | 7 / 13 \u00b0C | 0 mm | 3% |\n| Lun 9 | Pioggia debole | 8 / 9 \u00b0C | 2,5 mm | 52% |\n| Mar 10 | Pioggia debole | 8 / 12 \u00b0C | 4,9 mm | 65% |\n| Mer 11 | Nebbia, asciutto | 9 / 12 \u00b0C | 0 mm | 26% |\n| **Totale** | | | **11,8 mm** | |\n\n## I modelli sono d'accordo?\n\nHo confrontato tre modelli meteo per vedere quanto \u00e8 solida la risposta (totale in mm sui 5 giorni):\n\n| Modello | Genova | Milano |\n|---|---|---|\n| ECMWF (europeo) | 19,8 | 8,4 |\n| ICON-EU (tedesco) | 17,2 | 19,4 |\n| M\u00e9t\u00e9o-France (fino a marted\u00ec) | 72,3 | 8,6 |\n\nDue modelli su tre danno Genova chiaramente pi\u00f9 piovosa. Il modello tedesco le d\u00e0 quasi pari, perch\u00e9 vede pi\u00f9 pioggia a Milano oggi. M\u00e9t\u00e9o-France vede piogge forti a Genova luned\u00ec e marted\u00ec, oltre 30 mm al giorno. Se ha ragione lui, la differenza sar\u00e0 molto pi\u00f9 ampia, quindi a Genova conviene seguire gli eventuali avvisi di allerta di ARPAL.\n\n**Conclusione:** a Genova piover\u00e0 di pi\u00f9, e soprattutto pi\u00f9 a lungo (tre giorni di fila, da luned\u00ec a mercoled\u00ec). A Milano piove oggi, poi luned\u00ec e marted\u00ec, ma con quantit\u00e0 pi\u00f9 basse. Fa anche pi\u00f9 freddo: le massime vanno da 9 a 13 \u00b0C, contro i 13-16 \u00b0C di Genova.\n\n*Fonte: Open-Meteo (modello di riferimento pi\u00f9 ECMWF, ICON-EU e M\u00e9t\u00e9o-France), dati scaricati il 7 novembre 2026. Oltre i 3 giorni le previsioni sulle quantit\u00e0 di pioggia sono meno affidabili.*\n"}], "grading": {"expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Both tables have Min / Max for all 5 days."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": false, "evidence": "No per-day reliability; only a generic note that rain amounts beyond 3 days are less reliable."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Default model plus ECMWF, ICON-EU, M\u00e9t\u00e9o-France named."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text, no markdown links."}, {"text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.", "passed": true, "evidence": "Pioggia column in mm for all 5 days in both tables, with totals."}, {"text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.", "passed": true, "evidence": "'In breve: piover\u00e0 di pi\u00f9 a Genova.'"}], "summary": {"passed": 4, "failed": 2, "total": 6, "pass_rate": 0.67}, "timing": {"executor_duration_seconds": 44.8, "total_duration_seconds": 44.8}}}], "previous_feedback": {}, "previous_outputs": {}, "benchmark": {"metadata": {"skill_name": "meteo-media", "skill_path": "\u003cpath/to/skill>", "executor_model": "\u003cmodel-name>", "analyzer_model": "\u003cmodel-name>", "timestamp": "2026-11-07T12:29:09Z", "evals_run": ["bologna-domani-bici", "firenze-giovedi-venerdi-lontano", "genova-milano-dove-piove-di-piu"], "runs_per_configuration": 1}, "runs": [{"eval_id": "bologna-domani-bici", "eval_name": "bologna-domani-bici", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 6, "failed": 0, "total": 6, "time_seconds": 67.3, "tokens": 69898, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Dom 8: min 7\u00b0 max 12\u00b0; Lun 9: min 7\u00b0 max 11\u00b0."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Dom 'Affidabilit\u00e0: alta', Lun 'Affidabilit\u00e0: bassa'."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Names 6 models (ECMWF, GFS, ICON, M\u00e9t\u00e9o-France, UKMO, ItaliaMeteo-ARPAE) plus iLMeteo and meteo.it."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 8 markdown links."}, {"text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).", "passed": true, "evidence": "Sections for 'Domenica 8 novembre' and 'Luned\u00ec 9 novembre'."}, {"text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.", "passed": true, "evidence": "'Per la bici' section: Domenica 'si va tranquilli', Luned\u00ec 'probabilmente si pu\u00f2 andare... porta mantellina'."}], "notes": []}, {"eval_id": "firenze-giovedi-venerdi-lontano", "eval_name": "firenze-giovedi-venerdi-lontano", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 1.0, "passed": 7, "failed": 0, "total": 7, "time_seconds": 67.5, "tokens": 68497, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Table: Gio 12 14\u00b0/18\u00b0, Ven 13 14\u00b0/17\u00b0."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Table column Affidabilit\u00e0: 'bassa' for both days."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "ECMWF, GFS, ICON, UKMO plus iLMeteo, meteo.it, Meteored, AccuWeather."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 11 markdown links."}, {"text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.", "passed": true, "evidence": "'gioved\u00ec 12 e venerd\u00ec 13 novembre' in title."}, {"text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.", "passed": true, "evidence": "'Mancano per\u00f2 5-6 giorni... incerto' and 'Conviene ricontrollare marted\u00ec 10 o mercoled\u00ec 11'."}, {"text": "The answer gives a clear yes or no on whether to bring an umbrella.", "passed": true, "evidence": "'In breve: s\u00ec, porta l'ombrello.'"}], "notes": []}, {"eval_id": "genova-milano-dove-piove-di-piu", "eval_name": "genova-milano-dove-piove-di-piu", "configuration": "with_skill", "run_number": 1, "result": {"pass_rate": 0.83, "passed": 5, "failed": 1, "total": 6, "time_seconds": 87.6, "tokens": 72015, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Both tables have Min / Max for all 5 days."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "Affidabilit\u00e0 column for all 5 days in both tables."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "6 models named plus iLMeteo, meteo.it, Quotidiano Nazionale, Telepass Moveo, Meteo5."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": true, "evidence": "Ends with 'Fonti:' list of 11 markdown links."}, {"text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.", "passed": false, "evidence": "mm missing for several days: Genova Sab 7 ('qualche goccia') and Dom 8, Milano Dom 8 and Mer 11 have no mm value."}, {"text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.", "passed": true, "evidence": "'In breve: piover\u00e0 di pi\u00f9 a Genova' (35 mm vs 9 mm)."}], "notes": []}, {"eval_id": "bologna-domani-bici", "eval_name": "bologna-domani-bici", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.67, "passed": 4, "failed": 2, "total": 6, "time_seconds": 42.4, "tokens": 61610, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Dom: 8 \u00b0C morning, 12-13 \u00b0C afternoon; Lun: 'fra 8 e 12 \u00b0C'."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": false, "evidence": "No per-day reliability; only a generic 'le previsioni a due giorni possono ancora cambiare'."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Names 4 models: ECMWF IFS, DWD ICON, NOAA GFS, ICON-2I."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text 'Fonte: Open-Meteo', no markdown links."}, {"text": "The answer covers Sunday 8 November and Monday 9 November 2026 (not other days).", "passed": true, "evidence": "'Domenica 8 (domani)' and 'Luned\u00ec 9'."}, {"text": "The answer gives an explicit recommendation about going to work by bike for each of the two days.", "passed": true, "evidence": "Domenica 'si va in bici senza pensieri'; Luned\u00ec: dry in commute hours, bring a light rain jacket."}], "notes": []}, {"eval_id": "firenze-giovedi-venerdi-lontano", "eval_name": "firenze-giovedi-venerdi-lontano", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.86, "passed": 6, "failed": 1, "total": 7, "time_seconds": 36.2, "tokens": 59512, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Table temperature column: Gio 16-18 \u00b0C, Ven 15-18 \u00b0C (min-max range)."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": true, "evidence": "'Quanto \u00e8 affidabile' paragraph covers both days: 5-6 days out, rain almost certain, amounts and timing uncertain."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "ECMWF, GFS, ICON and the 51-member ECMWF ensemble."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text, no markdown links."}, {"text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.", "passed": true, "evidence": "'gioved\u00ec 12 e venerd\u00ec 13 novembre'."}, {"text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.", "passed": true, "evidence": "'mancano 5-6 giorni... possono ancora cambiare' and 'Mercoled\u00ec sera dai un'occhiata al sito del Centro Funzionale'."}, {"text": "The answer gives a clear yes or no on whether to bring an umbrella.", "passed": true, "evidence": "'S\u00ec, porta l'ombrello.'"}], "notes": []}, {"eval_id": "genova-milano-dove-piove-di-piu", "eval_name": "genova-milano-dove-piove-di-piu", "configuration": "without_skill", "run_number": 1, "result": {"pass_rate": 0.67, "passed": 4, "failed": 2, "total": 6, "time_seconds": 44.8, "tokens": 60665, "tool_calls": 0, "errors": 0}, "expectations": [{"text": "The answer gives both a minimum and a maximum temperature for every requested day.", "passed": true, "evidence": "Both tables have Min / Max for all 5 days."}, {"text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.", "passed": false, "evidence": "No per-day reliability; only a generic note that rain amounts beyond 3 days are less reliable."}, {"text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.", "passed": true, "evidence": "Default model plus ECMWF, ICON-EU, M\u00e9t\u00e9o-France named."}, {"text": "The answer ends with a list of sources given as markdown links.", "passed": false, "evidence": "Source given as plain italic text, no markdown links."}, {"text": "The answer gives a rainfall amount in mm for each of the 5 days for both Genova and Milano.", "passed": true, "evidence": "Pioggia column in mm for all 5 days in both tables, with totals."}, {"text": "The answer clearly names which of the two cities will get more rain overall in the 5 days.", "passed": true, "evidence": "'In breve: piover\u00e0 di pi\u00f9 a Genova.'"}], "notes": []}], "run_summary": {"with_skill": {"pass_rate": {"mean": 0.9433, "stddev": 0.0981, "min": 0.83, "max": 1.0}, "time_seconds": {"mean": 74.1333, "stddev": 11.6629, "min": 67.3, "max": 87.6}, "tokens": {"mean": 70136.6667, "stddev": 1771.102, "min": 68497, "max": 72015}}, "without_skill": {"pass_rate": {"mean": 0.7333, "stddev": 0.1097, "min": 0.67, "max": 0.86}, "time_seconds": {"mean": 41.1333, "stddev": 4.4377, "min": 36.2, "max": 44.8}, "tokens": {"mean": 60595.6667, "stddev": 1050.7171, "min": 59512, "max": 61610}}, "delta": {"pass_rate": "+0.21", "time_seconds": "+33.0", "tokens": "+9541"}}, "notes": ["Il criterio 'almeno 3 fonti' passa sempre, con o senza skill: anche senza skill Claude confronta pi\u00f9 modelli tramite Open-Meteo. Non distingue le due versioni.", "La differenza viene da affidabilit\u00e0 per giorno e link alle fonti, che la skill impone, e dal controllo sui siti italiani: senza skill nessuna prova ha fatto ricerche web.", "Punto debole 1 della skill: lo script d\u00e0 solo totali giornalieri, quindi per la bici non sa dire se piove negli orari da pendolare. La prova senza skill s\u00ec (dati orari).", "Punto debole 2: il modello di tabella della skill non ha una colonna mm, quindi nei giorni asciutti o quasi i millimetri spariscono (criterio fallito su Genova-Milano).", "Punto debole 3: a Genova la media (35 mm) \u00e8 tirata su da due modelli molto pi\u00f9 piovosi degli altri. Anche la mediana aiuterebbe.", "La skill costa circa 33 secondi in pi\u00f9 e circa 9.500 token in pi\u00f9 per risposta, quasi tutto per le ricerche web."]}};
+
+    // ---- State ----
+    let feedbackMap = {};  // run_id -> feedback text
+    let currentIndex = 0;
+    let visitedRuns = new Set();
+
+    // ---- Init ----
+    async function init() {
+      // Load saved feedback from server — but only if this isn't a fresh
+      // iteration (indicated by previous_feedback being present). When
+      // previous feedback exists, the feedback.json on disk is stale from
+      // the prior iteration and should not pre-fill the textareas.
+      const hasPrevious = Object.keys(EMBEDDED_DATA.previous_feedback || {}).length > 0
+        || Object.keys(EMBEDDED_DATA.previous_outputs || {}).length > 0;
+      if (!hasPrevious) {
+        try {
+          const resp = await fetch("/api/feedback");
+          const data = await resp.json();
+          if (data.reviews) {
+            for (const r of data.reviews) feedbackMap[r.run_id] = r.feedback;
+          }
+        } catch { /* first run, no feedback yet */ }
+      }
+
+      document.getElementById("skill-name").textContent = EMBEDDED_DATA.skill_name;
+      showRun(0);
+
+      // Wire up feedback auto-save
+      const textarea = document.getElementById("feedback");
+      let saveTimeout = null;
+      textarea.addEventListener("input", () => {
+        clearTimeout(saveTimeout);
+        document.getElementById("feedback-status").textContent = "";
+        saveTimeout = setTimeout(() => saveCurrentFeedback(), 800);
+      });
+    }
+
+    // ---- Navigation ----
+    function navigate(delta) {
+      const newIndex = currentIndex + delta;
+      if (newIndex >= 0 && newIndex < EMBEDDED_DATA.runs.length) {
+        saveCurrentFeedback();
+        showRun(newIndex);
+      }
+    }
+
+    function updateNavButtons() {
+      document.getElementById("prev-btn").disabled = currentIndex === 0;
+      document.getElementById("next-btn").disabled =
+        currentIndex === EMBEDDED_DATA.runs.length - 1;
+    }
+
+    // ---- Show a run ----
+    function showRun(index) {
+      currentIndex = index;
+      const run = EMBEDDED_DATA.runs[index];
+
+      // Progress
+      document.getElementById("progress").textContent =
+        `${index + 1} of ${EMBEDDED_DATA.runs.length}`;
+
+      // Prompt
+      document.getElementById("prompt-text").textContent = run.prompt;
+
+      // Config badge
+      const badge = document.getElementById("config-badge");
+      const configMatch = run.id.match(/(with_skill|without_skill|new_skill|old_skill)/);
+      if (configMatch) {
+        const config = configMatch[1];
+        const isBaseline = config === "without_skill" || config === "old_skill";
+        badge.textContent = config.replace(/_/g, " ");
+        badge.className = "config-badge " + (isBaseline ? "config-baseline" : "config-primary");
+        badge.style.display = "inline-block";
+      } else {
+        badge.style.display = "none";
+      }
+
+      // Outputs
+      renderOutputs(run);
+
+      // Previous outputs
+      renderPrevOutputs(run);
+
+      // Grades
+      renderGrades(run);
+
+      // Previous feedback
+      const prevFb = (EMBEDDED_DATA.previous_feedback || {})[run.id];
+      const prevEl = document.getElementById("prev-feedback");
+      if (prevFb) {
+        document.getElementById("prev-feedback-text").textContent = prevFb;
+        prevEl.style.display = "block";
+      } else {
+        prevEl.style.display = "none";
+      }
+
+      // Feedback
+      document.getElementById("feedback").value = feedbackMap[run.id] || "";
+      document.getElementById("feedback-status").textContent = "";
+
+      updateNavButtons();
+
+      // Track visited runs and promote done button when all visited
+      visitedRuns.add(index);
+      const doneBtn = document.getElementById("done-btn");
+      if (visitedRuns.size >= EMBEDDED_DATA.runs.length) {
+        doneBtn.classList.add("ready");
+      }
+
+      // Scroll main content to top
+      document.querySelector(".main").scrollTop = 0;
+    }
+
+    // ---- Render outputs ----
+    function renderOutputs(run) {
+      const container = document.getElementById("outputs-body");
+      container.innerHTML = "";
+
+      const outputs = run.outputs || [];
+      if (outputs.length === 0) {
+        container.innerHTML = '<div class="empty-state">No output files</div>';
+        return;
+      }
+
+      for (const file of outputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        // Always show file header with download link
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const content = document.createElement("div");
+        content.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          content.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          content.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          content.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(content, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          content.appendChild(a);
+        } else if (file.type === "error") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          pre.style.color = "var(--red)";
+          content.appendChild(pre);
+        }
+
+        fileDiv.appendChild(content);
+        container.appendChild(fileDiv);
+      }
+    }
+
+    // ---- XLSX rendering via SheetJS ----
+    function renderXlsx(container, b64Data) {
+      try {
+        const raw = Uint8Array.from(atob(b64Data), c => c.charCodeAt(0));
+        const wb = XLSX.read(raw, { type: "array" });
+
+        for (let i = 0; i < wb.SheetNames.length; i++) {
+          const sheetName = wb.SheetNames[i];
+          const ws = wb.Sheets[sheetName];
+
+          if (wb.SheetNames.length > 1) {
+            const sheetLabel = document.createElement("div");
+            sheetLabel.style.cssText =
+              "font-weight:600; font-size:0.8rem; color:#b0aea5; margin-top:0.5rem; margin-bottom:0.25rem;";
+            sheetLabel.textContent = "Sheet: " + sheetName;
+            container.appendChild(sheetLabel);
+          }
+
+          const htmlStr = XLSX.utils.sheet_to_html(ws, { editable: false });
+          const wrapper = document.createElement("div");
+          wrapper.innerHTML = htmlStr;
+          container.appendChild(wrapper);
+        }
+      } catch (err) {
+        container.textContent = "Error rendering spreadsheet: " + err.message;
+      }
+    }
+
+    // ---- Grades ----
+    function renderGrades(run) {
+      const section = document.getElementById("grades-section");
+      const content = document.getElementById("grades-content");
+
+      if (!run.grading) {
+        section.style.display = "none";
+        return;
+      }
+
+      const grading = run.grading;
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("grades-arrow").classList.remove("open");
+
+      const summary = grading.summary || {};
+      const expectations = grading.expectations || [];
+
+      let html = '<div style="padding: 1rem;">';
+
+      // Summary line
+      const passRate = summary.pass_rate != null
+        ? Math.round(summary.pass_rate * 100) + "%"
+        : "?";
+      const badgeClass = summary.pass_rate >= 0.8 ? "grade-pass" : summary.pass_rate >= 0.5 ? "" : "grade-fail";
+      html += '<div class="grades-summary">';
+      html += '<span class="grade-badge ' + badgeClass + '">' + passRate + '</span>';
+      html += '<span>' + escapeHtml(summary.passed || 0) + ' passed, ' + escapeHtml(summary.failed || 0) + ' failed of ' + escapeHtml(summary.total || 0) + '</span>';
+      html += '</div>';
+
+      // Assertions list
+      html += '<ul class="assertion-list">';
+      for (const exp of expectations) {
+        const statusClass = exp.passed ? "pass" : "fail";
+        const statusIcon = exp.passed ? "\u2713" : "\u2717";
+        html += '<li class="assertion-item">';
+        html += '<span class="assertion-status ' + statusClass + '">' + statusIcon + '</span>';
+        html += '<span>' + escapeHtml(exp.text) + '</span>';
+        if (exp.evidence) {
+          html += '<div class="assertion-evidence">' + escapeHtml(exp.evidence) + '</div>';
+        }
+        html += '</li>';
+      }
+      html += '</ul>';
+
+      html += '</div>';
+      content.innerHTML = html;
+    }
+
+    function toggleGrades() {
+      const content = document.getElementById("grades-content");
+      const arrow = document.getElementById("grades-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Previous outputs (collapsible) ----
+    function renderPrevOutputs(run) {
+      const section = document.getElementById("prev-outputs-section");
+      const content = document.getElementById("prev-outputs-content");
+      const prevOutputs = (EMBEDDED_DATA.previous_outputs || {})[run.id];
+
+      if (!prevOutputs || prevOutputs.length === 0) {
+        section.style.display = "none";
+        return;
+      }
+
+      section.style.display = "block";
+      // Reset to collapsed
+      content.classList.remove("open");
+      document.getElementById("prev-outputs-arrow").classList.remove("open");
+
+      // Render the files into the content area
+      content.innerHTML = "";
+      const wrapper = document.createElement("div");
+      wrapper.style.padding = "1rem";
+
+      for (const file of prevOutputs) {
+        const fileDiv = document.createElement("div");
+        fileDiv.className = "output-file";
+
+        const header = document.createElement("div");
+        header.className = "output-file-header";
+        const nameSpan = document.createElement("span");
+        nameSpan.textContent = file.name;
+        header.appendChild(nameSpan);
+        const dlBtn = document.createElement("a");
+        dlBtn.className = "dl-btn";
+        dlBtn.textContent = "Download";
+        dlBtn.download = file.name;
+        dlBtn.href = getDownloadUri(file);
+        header.appendChild(dlBtn);
+        fileDiv.appendChild(header);
+
+        const fc = document.createElement("div");
+        fc.className = "output-file-content";
+
+        if (file.type === "text") {
+          const pre = document.createElement("pre");
+          pre.textContent = file.content;
+          fc.appendChild(pre);
+        } else if (file.type === "image") {
+          const img = document.createElement("img");
+          img.src = file.data_uri;
+          img.alt = file.name;
+          fc.appendChild(img);
+        } else if (file.type === "pdf") {
+          const iframe = document.createElement("iframe");
+          iframe.src = file.data_uri;
+          fc.appendChild(iframe);
+        } else if (file.type === "xlsx") {
+          renderXlsx(fc, file.data_b64);
+        } else if (file.type === "binary") {
+          const a = document.createElement("a");
+          a.className = "download-link";
+          a.href = file.data_uri;
+          a.download = file.name;
+          a.textContent = "Download " + file.name;
+          fc.appendChild(a);
+        }
+
+        fileDiv.appendChild(fc);
+        wrapper.appendChild(fileDiv);
+      }
+
+      content.appendChild(wrapper);
+    }
+
+    function togglePrevOutputs() {
+      const content = document.getElementById("prev-outputs-content");
+      const arrow = document.getElementById("prev-outputs-arrow");
+      content.classList.toggle("open");
+      arrow.classList.toggle("open");
+    }
+
+    // ---- Feedback (saved to server -> feedback.json) ----
+    function saveCurrentFeedback() {
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // Build reviews array from map
+      const reviews = [];
+      for (const [run_id, feedback] of Object.entries(feedbackMap)) {
+        if (feedback.trim()) {
+          reviews.push({ run_id, feedback, timestamp: new Date().toISOString() });
+        }
+      }
+
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ reviews, status: "in_progress" }),
+      }).then(() => {
+        document.getElementById("feedback-status").textContent = "Saved";
+      }).catch(() => {
+        // Static mode or server unavailable — no-op on auto-save,
+        // feedback will be downloaded on final submit
+        document.getElementById("feedback-status").textContent = "Will download on submit";
+      });
+    }
+
+    // ---- Done ----
+    function showDoneDialog() {
+      // Save current textarea to feedbackMap (but don't POST yet)
+      const run = EMBEDDED_DATA.runs[currentIndex];
+      const text = document.getElementById("feedback").value;
+      if (text.trim() === "") {
+        delete feedbackMap[run.id];
+      } else {
+        feedbackMap[run.id] = text;
+      }
+
+      // POST once with status: complete — include ALL runs so the model
+      // can distinguish "no feedback" (looks good) from "not reviewed"
+      const reviews = [];
+      const ts = new Date().toISOString();
+      for (const r of EMBEDDED_DATA.runs) {
+        reviews.push({ run_id: r.id, feedback: feedbackMap[r.id] || "", timestamp: ts });
+      }
+      const payload = JSON.stringify({ reviews, status: "complete" }, null, 2);
+      fetch("/api/feedback", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: payload,
+      }).then(() => {
+        document.getElementById("done-overlay").classList.add("visible");
+      }).catch(() => {
+        // Server not available (static mode) — download as file
+        const blob = new Blob([payload], { type: "application/json" });
+        const url = URL.createObjectURL(blob);
+        const a = document.createElement("a");
+        a.href = url;
+        a.download = "feedback.json";
+        a.click();
+        URL.revokeObjectURL(url);
+        document.getElementById("done-overlay").classList.add("visible");
+      });
+    }
+
+    function closeDoneDialog() {
+      // Reset status back to in_progress
+      saveCurrentFeedback();
+      document.getElementById("done-overlay").classList.remove("visible");
+    }
+
+    // ---- Toast ----
+    function showToast(message) {
+      const toast = document.getElementById("toast");
+      toast.textContent = message;
+      toast.classList.add("visible");
+      setTimeout(() => toast.classList.remove("visible"), 2000);
+    }
+
+    // ---- Keyboard nav ----
+    document.addEventListener("keydown", (e) => {
+      // Don't capture when typing in textarea
+      if (e.target.tagName === "TEXTAREA") return;
+
+      if (e.key === "ArrowLeft" || e.key === "ArrowUp") {
+        e.preventDefault();
+        navigate(-1);
+      } else if (e.key === "ArrowRight" || e.key === "ArrowDown") {
+        e.preventDefault();
+        navigate(1);
+      }
+    });
+
+    // ---- Util ----
+    function getDownloadUri(file) {
+      if (file.data_uri) return file.data_uri;
+      if (file.data_b64) return "data:application/octet-stream;base64," + file.data_b64;
+      if (file.type === "text") return "data:text/plain;charset=utf-8," + encodeURIComponent(file.content);
+      return "#";
+    }
+
+    function escapeHtml(text) {
+      const div = document.createElement("div");
+      div.textContent = text;
+      return div.innerHTML.replace(/"/g, "&quot;");
+    }
+
+    // ---- View switching ----
+    function switchView(view) {
+      document.querySelectorAll(".view-tab").forEach(t => t.classList.remove("active"));
+      document.querySelectorAll(".view-panel").forEach(p => p.classList.remove("active"));
+      document.querySelector(`[onclick="switchView('${view}')"]`).classList.add("active");
+      document.getElementById("panel-" + view).classList.add("active");
+    }
+
+    // ---- Benchmark rendering ----
+    function renderBenchmark() {
+      const data = EMBEDDED_DATA.benchmark;
+      if (!data) return;
+
+      // Show the tabs
+      document.getElementById("view-tabs").style.display = "flex";
+
+      const container = document.getElementById("benchmark-content");
+      const summary = data.run_summary || {};
+      const metadata = data.metadata || {};
+      const notes = data.notes || [];
+
+      let html = "";
+
+      // Header
+      html += "<h2 style='font-family: Poppins, sans-serif; margin-bottom: 0.5rem;'>Benchmark Results</h2>";
+      html += "<p style='color: var(--text-muted); font-size: 0.875rem; margin-bottom: 1.25rem;'>";
+      if (metadata.skill_name) html += "<strong>" + escapeHtml(metadata.skill_name) + "</strong> &mdash; ";
+      if (metadata.timestamp) html += escapeHtml(metadata.timestamp) + " &mdash; ";
+      if (metadata.evals_run) html += "Evals: " + escapeHtml(metadata.evals_run.join(", ")) + " &mdash; ";
+      html += escapeHtml(metadata.runs_per_configuration || "?") + (metadata.runs_per_configuration === 1 ? " run" : " runs") + " per configuration";
+      html += "</p>";
+
+      // Summary table
+      html += '<table class="benchmark-table">';
+
+      function fmtStat(stat, pct) {
+        if (!stat) return "—";
+        const suffix = pct ? "%" : "";
+        const m = pct ? (stat.mean * 100).toFixed(0) : stat.mean.toFixed(1);
+        const s = pct ? (stat.stddev * 100).toFixed(0) : stat.stddev.toFixed(1);
+        return m + suffix + " ± " + s + suffix;
+      }
+
+      function deltaClass(val) {
+        if (!val) return "";
+        const n = parseFloat(val);
+        if (n > 0) return "benchmark-delta-positive";
+        if (n < 0) return "benchmark-delta-negative";
+        return "";
+      }
+
+      // Discover config names dynamically (everything except "delta")
+      const configs = Object.keys(summary).filter(k => k !== "delta");
+      const configA = configs[0] || "config_a";
+      const configB = configs[1] || "config_b";
+      const labelA = configA.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const labelB = configB.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+      const a = summary[configA] || {};
+      const b = summary[configB] || {};
+      const delta = summary.delta || {};
+      // With a single configuration there is nothing to compare: only its column is shown
+      const compare = cells => configs.length >= 2 ? cells : "";
+
+      html += "<thead><tr><th>Metric</th><th>" + escapeHtml(labelA) + "</th>" + compare("<th>" + escapeHtml(labelB) + "</th><th>Delta</th>") + "</tr></thead>";
+      html += "<tbody>";
+
+      html += "<tr><td><strong>Pass Rate</strong></td>";
+      html += "<td>" + fmtStat(a.pass_rate, true) + "</td>";
+      html += compare("<td>" + fmtStat(b.pass_rate, true) + "</td>");
+      html += compare('<td class="' + deltaClass(delta.pass_rate) + '">' + escapeHtml(delta.pass_rate || "—") + "</td>") + "</tr>";
+
+      // Time (only show row if data exists)
+      if (a.time_seconds || b.time_seconds) {
+        html += "<tr><td><strong>Time (s)</strong></td>";
+        html += "<td>" + fmtStat(a.time_seconds, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.time_seconds, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.time_seconds) + '">' + escapeHtml(delta.time_seconds ? delta.time_seconds + "s" : "—") + "</td>") + "</tr>";
+      }
+
+      // Tokens (only show row if data exists)
+      if (a.tokens || b.tokens) {
+        html += "<tr><td><strong>Tokens</strong></td>";
+        html += "<td>" + fmtStat(a.tokens, false) + "</td>";
+        html += compare("<td>" + fmtStat(b.tokens, false) + "</td>");
+        html += compare('<td class="' + deltaClass(delta.tokens) + '">' + escapeHtml(delta.tokens || "—") + "</td>") + "</tr>";
+      }
+
+      html += "</tbody></table>";
+
+      // Per-eval breakdown (if runs data available)
+      const runs = data.runs || [];
+      if (runs.length > 0) {
+        // Numeric ids first, then ids that are names
+        const rank = id => typeof id === "number" ? 0 : 1;
+        const evalIds = [...new Set(runs.map(r => r.eval_id))].sort((a, b) =>
+          rank(a) - rank(b) || (rank(a) ? String(a).localeCompare(String(b)) : a - b));
+
+        html += "<h3 style='font-family: Poppins, sans-serif; margin-bottom: 0.75rem;'>Per-Eval Breakdown</h3>";
+
+        const hasTime = runs.some(r => r.result && r.result.time_seconds != null);
+        const hasErrors = runs.some(r => r.result && r.result.errors > 0);
+
+        for (const evalId of evalIds) {
+          const evalRuns = runs.filter(r => r.eval_id === evalId);
+          const evalName = evalRuns[0] && evalRuns[0].eval_name ? evalRuns[0].eval_name : "Eval " + evalId;
+
+          html += "<h4 style='font-family: Poppins, sans-serif; margin: 1rem 0 0.5rem; color: var(--text);'>" + escapeHtml(evalName) + "</h4>";
+          html += '<table class="benchmark-table">';
+          html += "<thead><tr><th>Config</th><th>Run</th><th>Pass Rate</th>";
+          if (hasTime) html += "<th>Time (s)</th>";
+          if (hasErrors) html += "<th>Crashes During Execution</th>";
+          html += "</tr></thead>";
+          html += "<tbody>";
+
+          // Group by config and render with average rows
+          const configGroups = [...new Set(evalRuns.map(r => r.configuration))];
+          for (let ci = 0; ci < configGroups.length; ci++) {
+            const config = configGroups[ci];
+            const configRuns = evalRuns.filter(r => r.configuration === config);
+            if (configRuns.length === 0) continue;
+
+            const rowClass = ci === 0 ? "benchmark-row-with" : "benchmark-row-without";
+            const configLabel = escapeHtml(config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase()));
+
+            for (const run of configRuns) {
+              const r = run.result || {};
+              const prClass = r.pass_rate >= 0.8 ? "benchmark-delta-positive" : r.pass_rate < 0.5 ? "benchmark-delta-negative" : "";
+              html += '<tr class="' + rowClass + '">';
+              html += "<td>" + configLabel + "</td>";
+              html += "<td>" + escapeHtml(run.run_number) + "</td>";
+              html += '<td class="' + prClass + '">' + ((r.pass_rate || 0) * 100).toFixed(0) + "% (" + escapeHtml(r.passed || 0) + "/" + escapeHtml(r.total || 0) + ")</td>";
+              if (hasTime) html += "<td>" + (r.time_seconds != null ? r.time_seconds.toFixed(1) : "—") + "</td>";
+              if (hasErrors) html += "<td>" + escapeHtml(r.errors || 0) + "</td>";
+              html += "</tr>";
+            }
+
+            // Average row
+            const rates = configRuns.map(r => (r.result || {}).pass_rate || 0);
+            const avgRate = rates.reduce((a, b) => a + b, 0) / rates.length;
+            const avgPrClass = avgRate >= 0.8 ? "benchmark-delta-positive" : avgRate < 0.5 ? "benchmark-delta-negative" : "";
+            html += '<tr class="benchmark-row-avg ' + rowClass + '">';
+            html += "<td>" + configLabel + "</td>";
+            html += "<td>Avg</td>";
+            html += '<td class="' + avgPrClass + '">' + (avgRate * 100).toFixed(0) + "%</td>";
+            if (hasTime) {
+              const times = configRuns.map(r => (r.result || {}).time_seconds).filter(t => t != null);
+              html += "<td>" + (times.length ? (times.reduce((a, b) => a + b, 0) / times.length).toFixed(1) : "—") + "</td>";
+            }
+            if (hasErrors) html += "<td></td>";
+            html += "</tr>";
+          }
+          html += "</tbody></table>";
+
+          // Per-assertion detail for this eval
+          const runsWithExpectations = {};
+          for (const config of configGroups) {
+            runsWithExpectations[config] = evalRuns.filter(r => r.configuration === config && r.expectations && r.expectations.length > 0);
+          }
+          const hasAnyExpectations = Object.values(runsWithExpectations).some(runs => runs.length > 0);
+          if (hasAnyExpectations) {
+            // Collect all unique assertion texts across all configs
+            const allAssertions = [];
+            const seen = new Set();
+            for (const config of configGroups) {
+              for (const run of runsWithExpectations[config]) {
+                for (const exp of (run.expectations || [])) {
+                  if (!seen.has(exp.text)) {
+                    seen.add(exp.text);
+                    allAssertions.push(exp.text);
+                  }
+                }
+              }
+            }
+
+            html += '<table class="benchmark-table" style="margin-top: 0.5rem;">';
+            html += "<thead><tr><th>Assertion</th>";
+            for (const config of configGroups) {
+              const label = config.replace(/_/g, " ").replace(/\b\w/g, c => c.toUpperCase());
+              html += "<th>" + escapeHtml(label) + "</th>";
+            }
+            html += "</tr></thead><tbody>";
+
+            for (const assertionText of allAssertions) {
+              html += "<tr><td>" + escapeHtml(assertionText) + "</td>";
+
+              for (const config of configGroups) {
+                html += "<td>";
+                for (const run of runsWithExpectations[config]) {
+                  const exp = (run.expectations || []).find(e => e.text === assertionText);
+                  if (exp) {
+                    const cls = exp.passed ? "benchmark-delta-positive" : "benchmark-delta-negative";
+                    const icon = exp.passed ? "\u2713" : "\u2717";
+                    html += '<span class="' + cls + '" title="Run ' + escapeHtml(run.run_number) + ': ' + escapeHtml(exp.evidence || "") + '">' + icon + "</span> ";
+                  } else {
+                    html += "— ";
+                  }
+                }
+                html += "</td>";
+              }
+              html += "</tr>";
+            }
+            html += "</tbody></table>";
+          }
+        }
+      }
+
+      // Notes
+      if (notes.length > 0) {
+        html += '<div class="benchmark-notes">';
+        html += "<h3>Analysis Notes</h3>";
+        html += "<ul>";
+        for (const note of notes) {
+          html += "<li>" + escapeHtml(note) + "</li>";
+        }
+        html += "</ul></div>";
+      }
+
+      container.innerHTML = html;
+    }
+
+    // ---- Start ----
+    init();
+    renderBenchmark();
+  </script>
+</body>
+</html>

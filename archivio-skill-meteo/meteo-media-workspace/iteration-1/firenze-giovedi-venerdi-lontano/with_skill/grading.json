@@ -1,0 +1,49 @@
+{
+  "expectations": [
+    {
+      "text": "The answer gives both a minimum and a maximum temperature for every requested day.",
+      "passed": true,
+      "evidence": "Table: Gio 12 14°/18°, Ven 13 14°/17°."
+    },
+    {
+      "text": "The answer states, for every requested day, an explicit reliability level or degree of uncertainty.",
+      "passed": true,
+      "evidence": "Table column Affidabilità: 'bassa' for both days."
+    },
+    {
+      "text": "The answer is explicitly based on at least 3 distinct forecast models or sources, named in the answer.",
+      "passed": true,
+      "evidence": "ECMWF, GFS, ICON, UKMO plus iLMeteo, meteo.it, Meteored, AccuWeather."
+    },
+    {
+      "text": "The answer ends with a list of sources given as markdown links.",
+      "passed": true,
+      "evidence": "Ends with 'Fonti:' list of 11 markdown links."
+    },
+    {
+      "text": "The answer identifies Thursday and Friday as 12 and 13 November 2026.",
+      "passed": true,
+      "evidence": "'giovedì 12 e venerdì 13 novembre' in title."
+    },
+    {
+      "text": "The answer says that a forecast 5-6 days ahead is uncertain and suggests checking again closer to the date.",
+      "passed": true,
+      "evidence": "'Mancano però 5-6 giorni... incerto' and 'Conviene ricontrollare martedì 10 o mercoledì 11'."
+    },
+    {
+      "text": "The answer gives a clear yes or no on whether to bring an umbrella.",
+      "passed": true,
+      "evidence": "'In breve: sì, porta l'ombrello.'"
+    }
+  ],
+  "summary": {
+    "passed": 7,
+    "failed": 0,
+    "total": 7,
+    "pass_rate": 1.0
+  },
+  "timing": {
+    "executor_duration_seconds": 67.5,
+    "total_duration_seconds": 67.5
+  }
+}
