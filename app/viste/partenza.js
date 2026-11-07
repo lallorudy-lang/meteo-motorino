@@ -6,6 +6,8 @@ import {
   combinaOre, consiglio, distanzaKm, durataStimata, orePuntoDaRisposte, partenze, puntiIntermedi, fasce, mm,
 } from "../motore.js";
 import { creaMappa } from "./mappa.js";
+import { disegnaBarre } from "./barre.js";
+import { cercaVia as cercaViaVera } from "../fonti/indirizzi.js";
 import { salva, leggi } from "../preferiti.js";
 import { leggiUltimo, salvaUltimo, etichettaDataOra, statoUltimo, oraNelFuso } from "../freschezza.js";
 
@@ -137,13 +139,16 @@ function selectOre(id, valori, selezionato) {
   return s;
 }
 
-/** Monta la scheda Partenza dentro `contenitore`. */
-export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { orarioPunto: orarioPuntoVero } } = {}) {
+export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = cercaViaVera, fonti = { orarioPunto: orarioPuntoVero } } = {}) {
   contenitore.replaceChildren();
   const oggi = oraLocale("Europe/Rome").slice(0, 10);
   const form = el("form", undefined, "partenza-form");
-  const da = campo("Da", "partenza-da");
-  const a = campo("A (facoltativo)", "partenza-a");
+  const cittaDa = campo("Città di partenza", "partenza-citta-da");
+  const viaDa = campo("Via di partenza (facoltativo)", "partenza-via-da");
+  const cittaA = campo("Città di arrivo (facoltativo)", "partenza-citta-a");
+  const viaA = campo("Via di arrivo (facoltativo)", "partenza-via-a");
+  viaDa.wrap.hidden = true;
+  viaA.wrap.hidden = true;
   const giorno = campo("Giorno", "partenza-giorno", "date", oggi);
   const durata = campo("Durata del viaggio (minuti)", "partenza-durata", "number", "");
   durata.input.min = "5";
@@ -154,39 +159,37 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
   fasciaLabel.htmlFor = "partenza-dalle";
   const fascia = el("div", undefined, "fascia");
   fascia.append(fasciaLabel, dalleSel, el("span", " – "), alleSel);
-  const scelta = el("div", undefined, "scelta");
   const pulsante = el("button", "Calcola", "pulsante primario");
   pulsante.type = "submit";
   const messaggio = el("p", "", "esito");
   messaggio.setAttribute("role", "status");
   messaggio.setAttribute("aria-live", "polite");
   const risultatoBox = el("div", undefined, "risultato");
-  form.append(da.wrap, a.wrap, giorno.wrap, durata.wrap, fascia, scelta, pulsante, messaggio);
+  form.append(cittaDa.wrap, viaDa.wrap, cittaA.wrap, viaA.wrap, giorno.wrap, durata.wrap, fascia, pulsante, messaggio);
   contenitore.append(form, risultatoBox);
   mostraStorico(risultatoBox);
 
-  // Il luogo scelto (anche tra omonimi) resta in memoria, finché il testo non viene cambiato a mano.
-  const scelti = { da: null, a: null };
-  for (const [chiave, input] of [["da", da.input], ["a", a.input]]) {
-    input.addEventListener("input", () => {
-      scelti[chiave] = null;
-      input.closest(".campo").querySelector(".omonimi")?.remove();
-    });
+  // Per ogni estremo (da, a): città scelta, via scelta (o null = centro città), punto finale.
+  const stato = { da: { citta: null, via: null }, a: { citta: null, via: null } };
+  const campi = { da: { citta: cittaDa, via: viaDa }, a: { citta: cittaA, via: viaA } };
+
+  function togliOmonimi(k) {
+    campi[k].citta.wrap.querySelectorAll(".omonimi").forEach((s) => s.remove());
+    campi[k].via.wrap.querySelectorAll(".omonimi").forEach((s) => s.remove());
+  }
+  function azzera(k) {
+    stato[k] = { citta: null, via: null };
+    campi[k].via.input.value = "";
+    campi[k].via.wrap.hidden = true;
+    togliOmonimi(k);
+  }
+  for (const k of ["da", "a"]) {
+    campi[k].citta.input.addEventListener("input", () => azzera(k));
+    campi[k].via.input.addEventListener("input", () => { stato[k].via = null; togliOmonimi(k); });
   }
 
-  async function risolvi(chiave, input, etichetta) {
-    const testo = input.value.trim();
-    if (!testo) return { luogo: null, ambiguo: false };
-    if (scelti[chiave]) return { luogo: scelti[chiave], ambiguo: false };
-    const trovati = await cerca(testo);
-    if (!trovati.length) throw new Error(`Località non trovata: ${testo}`);
-    // Solo gli omonimi dello stesso paese del primo risultato: quelli esteri sono rumore.
-    const luoghi = trovati.filter((l) => l.codice_paese === trovati[0].codice_paese);
-    if (luoghi.length === 1) {
-      scelti[chiave] = luoghi[0];
-      return { luogo: luoghi[0], ambiguo: false };
-    }
-    // Omonimi: si fa scegliere prima di calcolare.
+  /** Lista per scegliere tra più luoghi: il primo è preselezionato, la scelta vale solo se la cambi. */
+  function scegliTra(wrap, luoghi, etichetta, onChange) {
     const lista = el("select", undefined, "omonimi");
     lista.setAttribute("aria-label", `Quale ${etichetta}?`);
     luoghi.forEach((l, i) => {
@@ -194,27 +197,76 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
       o.value = String(i);
       lista.append(o);
     });
-    lista.addEventListener("change", () => { scelti[chiave] = luoghi[Number(lista.value)]; });
-    scelti[chiave] = luoghi[0];
-    input.closest(".campo").querySelector(".omonimi")?.remove();
-    input.closest(".campo").append(lista);
-    return { luogo: null, ambiguo: testo };
+    lista.addEventListener("change", () => onChange(luoghi[Number(lista.value)]));
+    wrap.append(lista);
+  }
+
+  /** Risolve la città. Restituisce {vuoto}, {ok: luogo} oppure {ambigua: testo}. */
+  async function risolviCitta(k) {
+    const testo = campi[k].citta.input.value.trim();
+    if (!testo) return { vuoto: true };
+    if (stato[k].citta) return { ok: stato[k].citta };
+    const trovati = await cerca(testo);
+    if (!trovati.length) throw new Error(`Città non trovata: ${testo}`);
+    const luoghi = trovati.filter((l) => l.codice_paese === trovati[0].codice_paese);
+    togliOmonimi(k);
+    stato[k].citta = luoghi[0];
+    campi[k].via.wrap.hidden = false; // ora si scrive la via
+    if (luoghi.length === 1) return { ok: luoghi[0] };
+    scegliTra(campi[k].citta.wrap, luoghi, "città", (l) => { stato[k].citta = l; campi[k].via.wrap.hidden = false; });
+    return { ambigua: testo };
+  }
+
+  /** Risolve la via nella città scelta. Senza via si usa il centro della città. */
+  async function risolviVia(k) {
+    const testo = campi[k].via.input.value.trim();
+    if (!testo) return { ok: null };
+    if (stato[k].via) return { ok: stato[k].via };
+    const vie = await cercaVia(testo, stato[k].citta.nome);
+    if (!vie.length) throw new Error(`Via non trovata a ${stato[k].citta.nome}: scrivila in un altro modo, o lascia vuoto per il centro.`);
+    campi[k].via.wrap.querySelectorAll(".omonimi").forEach((s) => s.remove());
+    stato[k].via = vie[0];
+    if (vie.length === 1) return { ok: vie[0] };
+    scegliTra(campi[k].via.wrap, vie, "via", (v) => { stato[k].via = v; });
+    return { ambigua: testo };
+  }
+
+  /** Il punto finale di un estremo: via se c'è, altrimenti il centro della città. */
+  async function risolviPunto(k) {
+    const c = await risolviCitta(k);
+    if (c.vuoto) return { punto: null, ambigua: null };
+    if (c.ambigua) return { punto: null, ambigua: `città ${c.ambigua}` };
+    const v = await risolviVia(k);
+    if (v.ambigua) return { punto: null, ambigua: `via ${v.ambigua}` };
+    const base = stato[k].citta;
+    return { punto: v.ok ? { ...v.ok, fuso: base.fuso } : base, ambigua: null };
   }
 
   // Un preferito scelto o la posizione dal dispositivo compilano il form e calcolano subito.
-  const togliOmonimi = () => form.querySelectorAll(".omonimi").forEach((s) => s.remove());
+  const togliTutti = () => { togliOmonimi("da"); togliOmonimi("a"); };
   document.addEventListener("preferito-scelto", (ev) => {
-    togliOmonimi();
     const p = ev.detail;
-    da.input.value = p.da.nome; scelti.da = p.da;
-    a.input.value = p.a ? p.a.nome : ""; scelti.a = p.a || null;
+    togliTutti();
+    stato.da = { citta: p.da, via: null };
+    cittaDa.input.value = p.da.nome;
+    viaDa.wrap.hidden = true;
+    if (p.a) {
+      stato.a = { citta: p.a, via: null };
+      cittaA.input.value = p.a.nome;
+      viaA.wrap.hidden = true;
+    } else {
+      azzera("a");
+      cittaA.input.value = "";
+    }
     durata.input.value = p.durata_min ? String(p.durata_min) : "";
     form.requestSubmit();
   });
   document.addEventListener("posizione", (ev) => {
-    togliOmonimi();
-    da.input.value = ev.detail.nome; scelti.da = ev.detail;
-    a.input.focus();
+    togliTutti();
+    stato.da = { citta: ev.detail, via: null };
+    cittaDa.input.value = ev.detail.nome;
+    viaDa.wrap.hidden = true;
+    cittaA.input.focus();
   });
 
   form.addEventListener("submit", async (e) => {
@@ -222,27 +274,25 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     messaggio.textContent = "Calcolo in corso…";
     risultatoBox.replaceChildren();
     try {
-      const rDa = await risolvi("da", da.input, "partenza");
-      const rA = await risolvi("a", a.input, "arrivo");
-      const ambigui = [rDa.ambiguo, rA.ambiguo].filter(Boolean);
+      const d = await risolviPunto("da");
+      const a = await risolviPunto("a");
+      const ambigui = [d.ambigua && `partenza: ${d.ambigua}`, a.ambigua && `arrivo: ${a.ambigua}`].filter(Boolean);
       if (ambigui.length) {
-        messaggio.textContent = `Ci sono più luoghi chiamati ${ambigui.join(" e ")}: scegli quello giusto in elenco, poi premi Calcola.`;
+        messaggio.textContent = `Scegli il luogo giusto in elenco (${ambigui.join("; ")}), poi premi Calcola.`;
         return;
       }
-      const dl = rDa.luogo;
-      const al = rA.luogo;
-      if (!dl) throw new Error("Scrivi la città di partenza");
+      if (!d.punto) throw new Error("Scrivi la città di partenza");
       const durataVal = durata.input.value.trim();
       const dataGiorno = giorno.input.value || oggi;
-      const adesso = oraLocale(dl.fuso || "Europe/Rome");
+      const adesso = oraLocale(d.punto.fuso || "Europe/Rome");
       await calcolaPartenza(
-        { da: dl, a: al, giorno: dataGiorno, durata_min: durataVal ? Number(durataVal) : null,
+        { da: d.punto, a: a.punto, giorno: dataGiorno, durata_min: durataVal ? Number(durataVal) : null,
           dalle: Number(dalleSel.value), alle: Number(alleSel.value), adesso },
         fonti,
         (r) => {
-          disegna(r, risultatoBox, { da: dl, a: al, durata: durataVal });
+          disegna(r, risultatoBox, { da: d.punto, a: a.punto, durata: durataVal });
           salvaUltimo(ARCHIVIO(), {
-            giorno: dataGiorno, fuso: dl.fuso || "Europe/Rome", punti: r.punti.map((p) => p.nome),
+            giorno: dataGiorno, fuso: d.punto.fuso || "Europe/Rome", punti: r.punti.map((p) => p.nome),
             durata_min: r.durata_min, consiglio: r.consiglio, fasce: r.fasce,
           }, Date.now());
         },
@@ -263,21 +313,21 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     const punti = u.punti.join(" → ");
     const quando = `${etichettaDataOra(u.acquisito_ms, u.fuso)} (${u.fuso})`;
     const giornoPrevisto = `${u.giorno.slice(8, 10)}/${u.giorno.slice(5, 7)}`;
-    const oggi = oraNelFuso(Date.now(), u.fuso).giorno;
-    const perGiorno = u.giorno === oggi ? "" : ` per il giorno ${giornoPrevisto}`;
+    const oggiU = oraNelFuso(Date.now(), u.fuso).giorno;
+    const perGiorno = u.giorno === oggiU ? "" : ` per il giorno ${giornoPrevisto}`;
     let testo, classe;
     if (stato.tipo === "storico") {
       testo = `Storico del ${quando}${perGiorno}: nessun consiglio attuale. Calcola di nuovo.`;
       classe = "banner no";
     } else {
-      const fascia = stato.rimaste
+      const fasciaTesto = stato.rimaste
         ? (stato.rimaste.dalle === stato.rimaste.alle - 1 ? `alle ${fmt(stato.rimaste.dalle)}:00` : `tra le ${fmt(stato.rimaste.dalle)}:00 e le ${fmt(stato.rimaste.alle - 1)}:00`)
         : (c && c.consigliabile ? "" : "nessun orario davvero buono");
       if (stato.tipo === "vecchio") {
-        testo = `Dati di ${Math.round(stato.minuti / 60)} ore fa${perGiorno}: aggiorna prima di partire. Ultimo consiglio: ${fascia} (${punti}).`;
+        testo = `Dati di ${Math.round(stato.minuti / 60)} ore fa${perGiorno}: aggiorna prima di partire. Ultimo consiglio: ${fasciaTesto} (${punti}).`;
         classe = "banner no";
       } else {
-        testo = `Ultimo risultato, aggiornato ${stato.minuti} min fa${perGiorno}: ${fascia} (${punti}).`;
+        testo = `Ultimo risultato, aggiornato ${stato.minuti} min fa${perGiorno}: ${fasciaTesto} (${punti}).`;
         classe = "banner";
       }
     }
@@ -292,11 +342,10 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
       ? "Nessun orario rimasto oggi: prova con un altro giorno."
       : !cons
         ? "Dati insufficienti per consigliare un orario."
-      : cons.consigliabile
-        ? `Orari di partenza consigliati: tra le ${fmt(cons.dalle)}:00 e le ${fmt(cons.alle - 1)}:00 per un viaggio di ${r.durata_min} minuti`
-        : `Nessun orario davvero buono. La partenza meno sfavorevole è alle ${fmt(cons.dalle)}:00 per un viaggio di ${r.durata_min} minuti`;
-    const banner = el("p", testo, cons && cons.consigliabile ? "banner ok" : "banner no");
-    box.append(banner);
+        : cons.consigliabile
+          ? `Orari di partenza consigliati: tra le ${fmt(cons.dalle)}:00 e le ${fmt(cons.alle - 1)}:00 per un viaggio di ${r.durata_min} minuti`
+          : `Nessun orario davvero buono. La partenza meno sfavorevole è alle ${fmt(cons.dalle)}:00 per un viaggio di ${r.durata_min} minuti`;
+    box.append(el("p", testo, cons && cons.consigliabile ? "banner ok" : "banner no"));
     const btnPref = el("button", "☆ Salva questo tragitto", "pulsante");
     btnPref.type = "button";
     btnPref.addEventListener("click", () => {
@@ -313,6 +362,10 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
     const mappa = creaMappa(mappaBox, { punti: r.punti, km: r.km });
     const indice = r.ore.findIndex((o) => cons && o.ora === cons.dalle);
     mappa.mostraOre(r.ore, Math.max(0, indice));
+    box.append(el("h3", "Pioggia per ora (mm)"));
+    const barreBox = el("div", undefined, "barre-ore-box");
+    box.append(barreBox);
+    disegnaBarre(barreBox, r.ore.map((o) => ({ etichetta: fmt(o.ora), mm: o.mm, livello: o.livello })), { unita: "mm" });
     const tabella = el("table", undefined, "tabella-ore");
     const testa = el("tr");
     ["Ora", "Pioggia mm", "Probabilità", "Ensemble", "Raffiche", "Temp", "Giudizio"].forEach((t) => testa.append(el("th", t)));

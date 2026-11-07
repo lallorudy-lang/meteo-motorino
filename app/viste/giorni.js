@@ -1,6 +1,7 @@
 // Scheda Più giorni: previsione giorno per giorno per una città, fino a 16 giorni.
 import { cercaLuogo as cercaLuogoVero, giorniCitta as giorniCittaVero } from "../fonti/openmeteo.js";
 import { analizzaGiorni, mm } from "../motore.js";
+import { disegnaBarre } from "./barre.js";
 
 const ORIZZONTE = 16;
 const GIORNO_MS = 86400000;
@@ -144,6 +145,10 @@ function disegna(righe, note, box, luogo) {
     tabella.append(tr);
   }
   box.append(tabella);
+  box.append(el("h3", "Pioggia per giorno (mm, valore centrale)"));
+  const barreBox = el("div", undefined, "barre-giorni-box");
+  box.append(barreBox);
+  disegnaBarre(barreBox, righe.map((r) => ({ etichetta: r.giorno, mm: r.pioggia_mediana_mm, livello: null })), { unita: "mm" });
   for (const r of righe.filter((x) => x.avviso)) box.append(el("p", `Attenzione ${r.giorno}: ${r.avviso}.`, "nota"));
 }
 
