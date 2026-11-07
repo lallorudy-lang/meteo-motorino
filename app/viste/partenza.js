@@ -7,6 +7,7 @@ import {
 } from "../motore.js";
 import { creaMappa } from "./mappa.js";
 import { salva, leggi } from "../preferiti.js";
+import { leggiUltimo, salvaUltimo, etichettaDataOra, valutaFreschezza, LIMITI_MIN } from "../freschezza.js";
 
 const DURATA_MIN = 5;
 const DURATA_MAX = 600;
@@ -162,6 +163,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
   const risultatoBox = el("div", undefined, "risultato");
   form.append(da.wrap, a.wrap, giorno.wrap, durata.wrap, fascia, scelta, pulsante, messaggio);
   contenitore.append(form, risultatoBox);
+  mostraStorico(risultatoBox);
 
   // Il luogo scelto (anche tra omonimi) resta in memoria, finché il testo non viene cambiato a mano.
   const scelti = { da: null, a: null };
@@ -237,7 +239,13 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
         { da: dl, a: al, giorno: dataGiorno, durata_min: durataVal ? Number(durataVal) : null,
           dalle: Number(dalleSel.value), alle: Number(alleSel.value), adesso },
         fonti,
-        (r) => disegna(r, risultatoBox, { da: dl, a: al, durata: durataVal }),
+        (r) => {
+          disegna(r, risultatoBox, { da: dl, a: al, durata: durataVal });
+          salvaUltimo(ARCHIVIO(), {
+            giorno: dataGiorno, fuso: dl.fuso || "Europe/Rome", punti: r.punti.map((p) => p.nome),
+            durata_min: r.durata_min, consiglio: r.consiglio, fasce: r.fasce,
+          }, Date.now());
+        },
       );
       messaggio.textContent = "";
       if (!durataVal) durata.input.value = "";
@@ -245,6 +253,20 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, fonti = { o
       messaggio.textContent = err.message;
     }
   });
+
+  /** Mostra l'ultimo risultato salvato, marcandolo come storico quando non è più attuale. */
+  function mostraStorico(box) {
+    const u = leggiUltimo(ARCHIVIO());
+    if (!u) return;
+    const f = valutaFreschezza(u.acquisito_ms, Date.now(), LIMITI_MIN.previsioni);
+    const c = u.consiglio;
+    const orario = c && c.consigliabile ? `tra le ${fmt(c.dalle)}:00 e le ${fmt(c.alle - 1)}:00` : "nessun orario davvero buono";
+    const testo = f.attuale
+      ? `Ultimo risultato, ${f.testo}: ${orario} (${u.punti.join(" → ")})`
+      : `Storico del ${etichettaDataOra(u.acquisito_ms, u.fuso)}: ${orario} (${u.punti.join(" → ")}). Calcola di nuovo prima di partire.`;
+    const p = el("p", testo, f.attuale ? "banner" : "banner no");
+    box.prepend(p);
+  }
 
   function disegna(r, box, { da: dl, a: al, durata: durataScritta }) {
     box.replaceChildren();

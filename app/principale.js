@@ -121,6 +121,9 @@ collegaQui();
 collegaImpostazioni();
 disegnaPreferiti();
 document.addEventListener("preferito-salvato", disegnaPreferiti);
+if ("serviceWorker" in navigator) {
+  navigator.serviceWorker.register("sw.js").catch(() => {}); // senza SW l'app funziona lo stesso, solo online
+}
 montaPartenza(document.getElementById("contenuto-partenza"));
 montaGiorni(document.getElementById("contenuto-giorni"));
 apriScheda("partenza");
