@@ -111,3 +111,38 @@ main { padding: 16px; }
 .barra { border-radius: 8px 8px 0 0; }
 .link-utili { background: #fff; border-radius: 18px; margin: 8px 16px 20px; border: 0; box-shadow: 0 4px 16px #0f172a0f; }
 h3 { color: #334155; font-size: 16px; margin: 18px 0 8px; }
+
+/* ---- Grafica v3: layout pulito, una colonna, più respiro ---- */
+:root { --blu: #2563eb; --blu-scuro: #1d4ed8; --verde: #16a34a; --giallo: #f59e0b; --grigio: #64748b; --carta: #ffffff; --bordo: #e2e8f0; --testo: #0f172a; }
+body { background: #f1f5f9; color: var(--testo); font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif; }
+.intestazione { background: var(--carta); color: var(--testo); padding: 20px 20px 8px; border-radius: 0; box-shadow: none; border-bottom: 1px solid var(--bordo); max-width: 760px; margin: 0 auto; }
+.intestazione h1 { font-size: 22px; font-weight: 700; }
+.sottotitolo { color: var(--grigio); font-size: 14px; margin-top: 2px; }
+.preferiti-barra { max-width: 760px; margin: 0 auto; padding: 14px 20px 4px; }
+.preferiti { gap: 8px; }
+.pulsante { border-radius: 10px; border: 1px solid var(--bordo); background: var(--carta); box-shadow: none; padding: 9px 14px; font-weight: 500; color: var(--testo); }
+.pulsante:hover { box-shadow: none; transform: none; background: #f8fafc; }
+.pulsante.primario { background: var(--blu); border-color: var(--blu); color: #fff; border-radius: 10px; font-weight: 600; box-shadow: none; padding: 12px 20px; width: 100%; }
+.pulsante.primario:hover { background: var(--blu-scuro); }
+.schede { max-width: 760px; margin: 14px auto 0; padding: 4px; background: #e2e8f0; border-radius: 12px; border: 0; gap: 4px; }
+.schede button { border-radius: 9px; background: transparent; color: var(--grigio); font-weight: 500; margin: 0; padding: 9px 14px; min-height: 40px; }
+.schede button[aria-selected="true"] { background: var(--carta); color: var(--testo); box-shadow: 0 1px 2px #0f172a1a; }
+main { max-width: 760px; margin: 0 auto; padding: 16px 20px 28px; }
+#scheda-partenza > .partenza-form, #scheda-giorni > .partenza-form { background: var(--carta); border: 1px solid var(--bordo); border-radius: 16px; padding: 20px; box-shadow: none; }
+.partenza-form { gap: 14px; }
+.campo label, .fascia label { font-size: 13px; font-weight: 600; color: #334155; text-transform: none; }
+.campo input, .fascia select, .partenza-form select, .omonimi { border-radius: 10px; border: 1px solid #cbd5e1; background: #fff; min-height: 46px; font-size: 16px; }
+.campo input:focus, .fascia select:focus { outline: 2px solid var(--blu); border-color: var(--blu); }
+.fascia { gap: 8px; }
+.banner { background: var(--carta); border: 1px solid var(--bordo); border-left: 4px solid var(--verde); border-radius: 12px; font-size: 16px; box-shadow: none; color: var(--testo); }
+.banner.no { border-left-color: var(--giallo); }
+.risultato > * { margin-top: 16px; }
+.mappa-area { border-radius: 16px; border: 1px solid var(--bordo); box-shadow: none; }
+.barre { background: var(--carta); border: 1px solid var(--bordo); border-radius: 16px; box-shadow: none; padding: 14px 12px 6px; }
+.tabella-ore { background: var(--carta); border: 1px solid var(--bordo); border-radius: 16px; box-shadow: none; }
+.tabella-ore th { background: #f8fafc; color: var(--grigio); font-size: 12px; text-transform: uppercase; letter-spacing: .04em; }
+.tabella-ore td, .tabella-ore th { padding: 9px 10px; border-bottom: 1px solid #f1f5f9; }
+.link-utili { max-width: 760px; margin: 0 auto 28px; background: transparent; border: 0; box-shadow: none; padding: 0 20px; }
+.link-utili a { color: var(--blu); }
+h3 { color: var(--testo); font-size: 15px; font-weight: 600; margin: 22px 0 8px; }
+.nota, .fasce { color: var(--grigio); font-size: 13px; }
