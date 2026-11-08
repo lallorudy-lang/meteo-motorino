@@ -165,7 +165,20 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
   const viaA = campo("Via di arrivo (facoltativo)", "partenza-via-a");
   viaDa.wrap.hidden = true;
   viaA.wrap.hidden = true;
-  const giorno = campo("Giorno", "partenza-giorno", "date", oggi);
+  const giorno = { wrap: el("div", undefined, "campo"), input: el("select") };
+  giorno.input.id = "partenza-giorno";
+  const etichettaGiorno = el("label", "Giorno");
+  etichettaGiorno.htmlFor = giorno.input.id;
+  giorno.wrap.append(etichettaGiorno, giorno.input);
+  const primo = Date.parse(`${oggi}T00:00:00Z`);
+  for (let i = 0; i < 16; i++) {
+    const iso = new Date(primo + i * 86400000).toISOString().slice(0, 10);
+    const nome = new Intl.DateTimeFormat("it-IT", { weekday: "long", day: "numeric", month: "long", timeZone: "UTC" })
+      .format(new Date(`${iso}T12:00:00Z`));
+    const o = el("option", i === 0 ? `Oggi, ${nome}` : i === 1 ? `Domani, ${nome}` : nome);
+    o.value = iso;
+    giorno.input.append(o);
+  }
   const durata = campo("Durata del viaggio (minuti)", "partenza-durata", "number", "");
   durata.input.min = "5";
   durata.input.max = "600";
@@ -239,6 +252,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
           const luoghi = await cerca(testo);
           if (campi[k].citta.input.value.trim() !== testo || !luoghi.length) return;
           const italiani = luoghi.filter((l) => l.codice_paese === luoghi[0].codice_paese).slice(0, 5);
+          campi[k].via.wrap.hidden = false; // la via è disponibile anche senza scegliere il suggerimento
           mostraSuggerimenti(k, "citta", italiani.map((l) => ({ label: l.etichetta, luogo: l })), (l) => {
             stato[k].citta = l;
             campi[k].citta.input.value = l.nome;
@@ -254,9 +268,16 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
       togliOmonimi(k);
       clearTimeout(timer[k + "v"]);
       const testo = campi[k].via.input.value.trim();
-      if (testo.length < 3 || !stato[k].citta) return;
+      const cittaScritta = campi[k].citta.input.value.trim();
+      if (testo.length < 3 || (!stato[k].citta && cittaScritta.length < 2)) return;
       timer[k + "v"] = setTimeout(async () => {
         try {
+          if (!stato[k].citta) {
+            const trovate = await cerca(cittaScritta);
+            const italiane = trovate.filter((l) => l.codice_paese === trovate[0]?.codice_paese);
+            if (!italiane.length) return;
+            stato[k].citta = italiane[0];
+          }
           const vie = await cercaVia(testo, stato[k].citta.nome);
           if (campi[k].via.input.value.trim() !== testo || !vie.length) return;
           mostraSuggerimenti(k, "via", vie.map((v) => ({ label: v.etichetta, luogo: v })), (v) => {
@@ -267,8 +288,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
       }, 900);
     });
   }
-  // Il calendario si chiude appena si sceglie una data.
-  giorno.input.addEventListener("change", () => giorno.input.blur());
+
 
   /** Lista per scegliere tra più luoghi: il primo è preselezionato, la scelta vale solo se la cambi. */
   function scegliTra(wrap, luoghi, etichetta, onChange) {
