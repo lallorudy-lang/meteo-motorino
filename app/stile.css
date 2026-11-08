@@ -105,7 +105,7 @@ main { padding: 16px; }
 .risultato > * { margin-top: 14px; }
 .mappa-area { border-radius: 18px; box-shadow: 0 6px 20px #0f172a1a; }
 .barre { border-radius: 16px; box-shadow: 0 4px 14px #0f172a0d; padding: 12px 10px 4px; }
-.tabella-ore { border-radius: 14px; overflow: hidden; box-shadow: 0 4px 14px #0f172a0d; }
+.tabella-ore { border-radius: 14px; box-shadow: 0 4px 14px #0f172a0d; }
 .tabella-ore th { background: #f1f5fb; font-weight: 600; color: #334155; }
 .barra-colonna { min-width: 30px; }
 .barra { border-radius: 8px 8px 0 0; }
@@ -180,3 +180,6 @@ body { background: linear-gradient(180deg, #dbeafe 0%, #ecfeff 45%, #f1f5f9 100%
 h3 { color: #0c4a6e; }
 .link-utili a { color: #0891b2; font-weight: 600; }
 .nota, .fasce { color: #0e7490; }
+
+/* Tabella scorrevole in orizzontale su telefono */
+.tabella-ore { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
