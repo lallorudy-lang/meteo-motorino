@@ -61,4 +61,4 @@ The interface is in Italian.
 
 ## License
 
-Not yet decided.
+MIT License. See [LICENSE](LICENSE).
