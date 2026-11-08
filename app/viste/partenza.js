@@ -375,11 +375,14 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
 
   // Invio passa al campo successivo: città → via → città d'arrivo → via → giorno → durata. Sulla durata calcola.
   const ordine = ["partenza-citta-da", "partenza-via-da", "partenza-citta-a", "partenza-via-a", "partenza-giorno", "partenza-durata"];
+  // Dopo un Invio sui campi precedenti alla durata, l'invio implicito del modulo viene ignorato per un momento.
+  let invioBloccatoFino = 0;
   form.addEventListener("keydown", (e) => {
     if (e.key !== "Enter") return;
     const i = ordine.indexOf(e.target.id);
     if (i < 0 || i === ordine.length - 1) return; // sulla durata Invio invia il modulo
     e.preventDefault();
+    invioBloccatoFino = Date.now() + 500;
     // Invio conferma il primo suggerimento proposto per il campo, se c'è.
     const primo = e.target.closest(".campo")?.querySelector(".suggerimenti > button");
     if (primo) primo.click();
@@ -392,6 +395,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
 
   form.addEventListener("submit", async (e) => {
     e.preventDefault();
+    if (Date.now() < invioBloccatoFino) return; // Invio sui campi precedenti: si passa solo al campo successivo
     messaggio.textContent = "Calcolo in corso…";
     risultatoBox.replaceChildren();
     try {
