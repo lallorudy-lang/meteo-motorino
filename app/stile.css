@@ -183,3 +183,5 @@ h3 { color: #0c4a6e; }
 
 /* Tabella scorrevole in orizzontale su telefono */
 .tabella-ore { display: block; max-width: 100%; overflow-x: auto; -webkit-overflow-scrolling: touch; }
+
+.firma { font-size: 13px; color: #0c4a6e; margin-top: 6px; }
