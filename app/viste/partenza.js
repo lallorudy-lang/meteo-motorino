@@ -180,6 +180,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     giorno.input.append(o);
   }
   const durata = campo("Durata del viaggio (minuti)", "partenza-durata", "number", "");
+  durata.input.placeholder = "vuoto = stima";
   durata.input.min = "5";
   durata.input.max = "600";
   const dalleSel = selectOre("partenza-dalle", Array.from({ length: 24 }, (_, i) => i), 6);
@@ -266,6 +267,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     campi[k].via.input.addEventListener("input", () => {
       stato[k].via = null;
       togliOmonimi(k);
+      campi[k].via.wrap.querySelector(".suggerimenti")?.replaceChildren();
       clearTimeout(timer[k + "v"]);
       const testo = campi[k].via.input.value.trim();
       const cittaScritta = campi[k].citta.input.value.trim();
@@ -369,6 +371,23 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     cittaDa.input.value = ev.detail.nome;
     viaDa.wrap.hidden = true;
     cittaA.input.focus();
+  });
+
+  // Invio passa al campo successivo: città → via → città d'arrivo → via → giorno → durata. Sulla durata calcola.
+  const ordine = ["partenza-citta-da", "partenza-via-da", "partenza-citta-a", "partenza-via-a", "partenza-giorno", "partenza-durata"];
+  form.addEventListener("keydown", (e) => {
+    if (e.key !== "Enter") return;
+    const i = ordine.indexOf(e.target.id);
+    if (i < 0 || i === ordine.length - 1) return; // sulla durata Invio invia il modulo
+    e.preventDefault();
+    // Invio conferma il primo suggerimento proposto per il campo, se c'è.
+    const primo = e.target.closest(".campo")?.querySelector(".suggerimenti > button");
+    if (primo) primo.click();
+    for (let j = i + 1; j < ordine.length; j++) {
+      const campo = document.getElementById(ordine[j]);
+      if (campo && !campo.closest(".campo").hidden) { campo.focus(); return; }
+    }
+    document.getElementById("partenza-durata").focus();
   });
 
   form.addEventListener("submit", async (e) => {
