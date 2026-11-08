@@ -2,7 +2,9 @@
 # Avvia Meteo Motorino sul Mac: fa partire il server dell'app e apre il browser.
 # Doppio clic su questo file. Per chiudere, premi Ctrl+C in questa finestra.
 
-cd "$(dirname "$0")/app" || { echo "Cartella app non trovata."; read -n 1 -s -r -p "Premi un tasto per chiudere."; exit 1; }
+QUI="$(cd "$(dirname "$0")" && pwd)"
+APP="$QUI/app"
+[ -d "$APP" ] || { echo "Cartella app non trovata."; read -n 1 -s -r -p "Premi un tasto per chiudere."; exit 1; }
 
 PORTA=8766
 URL="http://localhost:$PORTA/index.html"
@@ -15,11 +17,12 @@ pulisci() {
 }
 trap pulisci INT TERM
 
-if curl -s -o /dev/null --max-time 2 "$URL"; then
-  echo "Meteo Motorino è già in funzione: apro il browser."
-else
-  python3 -m http.server "$PORTA" --bind 127.0.0.1 >/dev/null 2>&1 &
-  SERVER=$!
+# Ferma un eventuale server precedente su questa porta, così parte sempre la versione attuale.
+lsof -ti "tcp:$PORTA" -sTCP:LISTEN 2>/dev/null | xargs -r kill 2>/dev/null
+sleep 0.5
+python3 "$QUI/servi_locale.py" "$PORTA" "$APP" >/dev/null 2>&1 &
+SERVER=$!
+if true; then
   for _ in 1 2 3 4 5 6 7 8 9 10; do
     curl -s -o /dev/null --max-time 1 "$URL" && break
     sleep 0.5
