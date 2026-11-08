@@ -117,3 +117,15 @@ test("con partenza e arrivo entrambi 'San Martino' i due punti restano distinti 
   assert.equal(new Set(nomi).size, nomi.length, nomi.join(" | "));
   assert.equal(Object.keys(r.ore[0].livelli).length, nomi.length);
 });
+
+test("con il percorso stradale i punti intermedi stanno sulla strada e la linea è salvata", async () => {
+  const linea = [[45.07, 7.69], [45.1, 7.9], [45.3, 8.4], [45.46, 9.19]];
+  const fonti = { ...fontiBuone("2026-11-09"), percorso: async () => ({ coordinate: linea, km: 130 }) };
+  const r = await calcolaPartenza(
+    { da: TORINO, a: luogo("Milano", 45.46, 9.19), giorno: "2026-11-09", durata_min: 90, adesso: "2026-11-08T10:00" },
+    fonti,
+  );
+  assert.deepEqual(r.percorso, linea);
+  assert.ok(r.punti.length >= 3, `punti ${r.punti.length}`);
+  assert.ok(r.note.includes("Percorso lungo le strade"));
+});

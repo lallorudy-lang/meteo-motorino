@@ -49,7 +49,7 @@ function icona(livello, forti) {
  * punti: [{nome, lat, lon}] dalla partenza all'arrivo; km: lunghezza in linea d'aria.
  * Restituisce { mostraOre(ore, iniziale), distruggi() }.
  */
-export function creaMappa(contenitore, { punti, km = 0 }) {
+export function creaMappa(contenitore, { punti, km = 0, percorso = null }) {
   contenitore.replaceChildren();
   const area = el("div", undefined, "mappa-area");
   area.setAttribute("role", "region");
@@ -81,7 +81,11 @@ export function creaMappa(contenitore, { punti, km = 0 }) {
       avviso.textContent = "Cartina di sfondo non disponibile aprendo il file dal disco.";
     }
     const ll = punti.map((p) => [p.lat, p.lon]);
-    if (ll.length > 1) {
+    if (percorso && percorso.length > 1) {
+      // Percorso lungo le strade: linea piena e continua.
+      L.polyline(percorso, { color: "#1f6fd1", weight: 5, opacity: 0.85 }).addTo(mappa);
+      mappa.fitBounds(L.latLngBounds(percorso).pad(0.12));
+    } else if (ll.length > 1) {
       L.polyline(ll, { color: "#1c2430", weight: 3, opacity: 0.55, dashArray: "6 8" }).addTo(mappa);
       mappa.fitBounds(L.latLngBounds(ll).pad(0.12));
     } else {

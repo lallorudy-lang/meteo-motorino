@@ -1,6 +1,7 @@
 // Scheda Partenza: quando conviene partire per il viaggio da A a B.
 // calcolaPartenza è pura rispetto alla rete: riceve le fonti come parametro (si testa senza browser).
 import { orarioPunto as orarioPuntoVero, cercaLuogo as cercaLuogoVero } from "../fonti/openmeteo.js";
+import { percorsoStrada as percorsoStradaVero, puntiLungoPercorso } from "../fonti/percorso.js";
 import { conLimite } from "../rete.js";
 import {
   combinaOre, consiglio, distanzaKm, durataStimata, orePuntoDaRisposte, partenze, puntiIntermedi, fasce, mm,
@@ -66,20 +67,35 @@ export async function calcolaPartenza(
   const fusoDa = da.fuso || (await fonti.orarioPunto(da.lat, da.lon, giorno)).fuso;
   let km = 0;
   let punti = [{ nome: da.nome, lat: da.lat, lon: da.lon }];
+  let percorso = null;
+  let kmStrada = null;
+  let frazioniRotta = null;
   if (a) {
     const fusoA = a.fuso || (await fonti.orarioPunto(a.lat, a.lon, giorno)).fuso;
     if (!stessoFuso(fusoDa, fusoA, giorno)) {
       throw new Error(`Partenza (${fusoDa}) e arrivo (${fusoA}) hanno fusi orari diversi: questo tipo di tragitto non è supportato.`);
     }
     km = distanzaKm(da.lat, da.lon, a.lat, a.lon);
-    const intermedi = puntiIntermedi(da.lat, da.lon, a.lat, a.lon, km);
+    // Se il percorso stradale è disponibile, i punti stanno lungo le strade; altrimenti in linea d'aria.
+    const rotta = fonti.percorso ? await fonti.percorso([da, a]) : null;
+    let intermedi;
+    if (rotta) {
+      percorso = rotta.coordinate;
+      kmStrada = rotta.km;
+      const pts = puntiLungoPercorso(percorso, Math.min(5, Math.floor(kmStrada / 15)));
+      intermedi = pts.map((p) => [`km ${Math.round(p.km)}`, p.lat, p.lon]);
+      frazioniRotta = [0, ...pts.map((p) => p.frazione), 1];
+    } else {
+      intermedi = puntiIntermedi(da.lat, da.lon, a.lat, a.lon, km);
+    }
     punti = [...punti, ...intermedi.map(([nome, lat, lon]) => ({ nome, lat, lon })), { nome: a.nome, lat: a.lat, lon: a.lon }];
     // Nomi uguali (es. due "San Martino") farebbero collidere i risultati per punto: si distinguono qui.
     if (punti[0].nome === punti[punti.length - 1].nome) {
       punti[0] = { ...punti[0], nome: `${punti[0].nome} (partenza)` };
       punti[punti.length - 1] = { ...punti[punti.length - 1], nome: `${a.nome} (arrivo)` };
     }
-    if (intermedi.length) note.push("Punti intermedi in linea d'aria, non lungo la strada: sono indicativi");
+    if (percorso) note.push("Percorso lungo le strade");
+    else if (intermedi.length) note.push("Punti intermedi in linea d'aria, non lungo la strada: sono indicativi");
   }
   const durata = durata_min ?? (a ? durataStimata(km) : 0);
   const primaOra = primaOraDi(giorno, adesso, dalle);
@@ -88,14 +104,14 @@ export async function calcolaPartenza(
   const conEnsemble = risposte.every((r) => r.ens);
   if (!conEnsemble) note.push("Senza ensemble: uso solo i modelli");
   const ore = punti.map((p, i) => ({ nome: p.nome, ore: orePuntoDaRisposte(risposte[i].det, risposte[i].ens, giorno) }));
-  const frazioni = punti.map((p) => (km ? distanzaKm(punti[0].lat, punti[0].lon, p.lat, p.lon) / km : 0));
+  const frazioni = frazioniRotta ?? punti.map((p) => (km ? distanzaKm(punti[0].lat, punti[0].lon, p.lat, p.lon) / km : 0));
   const datiPartenze = ore.map((p, i) => ({ nome: p.nome, frazione: frazioni[i], ore: p.ore }));
 
   const oreCombinate = combinaOre(ore, primaOra, alle);
   const lista = partenze(datiPartenze, durata, primaOra, alle);
   if (!lista.length) note.push("Nessun orario rimasto oggi");
   const risultato = {
-    punti, km, durata_min: durata, ore: oreCombinate, partenze: lista,
+    punti, km, percorso, km_strada: kmStrada, durata_min: durata, ore: oreCombinate, partenze: lista,
     fasce: fasce(lista), consiglio: consiglio(lista), note, con_ensemble: conEnsemble,
   };
   avvisa(risultato);
@@ -139,7 +155,7 @@ function selectOre(id, valori, selezionato) {
   return s;
 }
 
-export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = cercaViaVera, fonti = { orarioPunto: orarioPuntoVero } } = {}) {
+export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = cercaViaVera, fonti = { orarioPunto: orarioPuntoVero, percorso: percorsoStradaVero } } = {}) {
   contenitore.replaceChildren();
   const oggi = oraLocale("Europe/Rome").slice(0, 10);
   const form = el("form", undefined, "partenza-form");
@@ -359,7 +375,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     if (cons) box.append(el("p", `Fasce: ${r.fasce.map((f) => `${fmt(f.dalle)}-${fmt(f.alle)} ${f.giudizio}`).join(" · ")}`, "fasce"));
     const mappaBox = el("div", undefined, "mappa-contenitore");
     box.append(mappaBox);
-    const mappa = creaMappa(mappaBox, { punti: r.punti, km: r.km });
+    const mappa = creaMappa(mappaBox, { punti: r.punti, km: r.km, percorso: r.percorso });
     const indice = r.ore.findIndex((o) => cons && o.ora === cons.dalle);
     mappa.mostraOre(r.ore, Math.max(0, indice));
     box.append(el("h3", "Pioggia per ora (mm)"));
