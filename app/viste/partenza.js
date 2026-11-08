@@ -198,11 +198,77 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     campi[k].via.input.value = "";
     campi[k].via.wrap.hidden = true;
     togliOmonimi(k);
+    svuotaSuggerimenti(k);
   }
+
+  /** Riquadro dei suggerimenti sotto il campo (città o via), creato una volta sola. */
+  function boxSuggerimenti(k, tipo) {
+    let b = campi[k][tipo].wrap.querySelector(".suggerimenti");
+    if (!b) {
+      b = el("div", undefined, "suggerimenti");
+      campi[k][tipo].wrap.append(b);
+    }
+    return b;
+  }
+  function svuotaSuggerimenti(k) {
+    campi[k].citta.wrap.querySelector(".suggerimenti")?.replaceChildren();
+    campi[k].via.wrap.querySelector(".suggerimenti")?.replaceChildren();
+  }
+  /** Mostra le voci tra cui scegliere: cliccandone una si richiama onPick con il luogo. */
+  function mostraSuggerimenti(k, tipo, voci, onPick) {
+    const box = boxSuggerimenti(k, tipo);
+    box.replaceChildren();
+    for (const v of voci) {
+      const b = el("button", v.label, "suggerimento");
+      b.type = "button";
+      b.addEventListener("click", () => { box.replaceChildren(); onPick(v.luogo); });
+      box.append(b);
+    }
+  }
+
+  const timer = {};
   for (const k of ["da", "a"]) {
-    campi[k].citta.input.addEventListener("input", () => azzera(k));
-    campi[k].via.input.addEventListener("input", () => { stato[k].via = null; togliOmonimi(k); });
+    // Città: dopo due lettere compaiono i suggerimenti; scegliendone una compare subito il campo della via.
+    campi[k].citta.input.addEventListener("input", () => {
+      azzera(k);
+      clearTimeout(timer[k + "c"]);
+      const testo = campi[k].citta.input.value.trim();
+      if (testo.length < 2) return;
+      timer[k + "c"] = setTimeout(async () => {
+        try {
+          const luoghi = await cerca(testo);
+          if (campi[k].citta.input.value.trim() !== testo || !luoghi.length) return;
+          const italiani = luoghi.filter((l) => l.codice_paese === luoghi[0].codice_paese).slice(0, 5);
+          mostraSuggerimenti(k, "citta", italiani.map((l) => ({ label: l.etichetta, luogo: l })), (l) => {
+            stato[k].citta = l;
+            campi[k].citta.input.value = l.nome;
+            campi[k].via.wrap.hidden = false;
+            campi[k].via.input.focus();
+          });
+        } catch { /* niente suggerimenti: si può comunque scrivere e premere Calcola */ }
+      }, 350);
+    });
+    // Via: con almeno tre lettere e una città scelta compaiono le vie (il servizio è a passo lento).
+    campi[k].via.input.addEventListener("input", () => {
+      stato[k].via = null;
+      togliOmonimi(k);
+      clearTimeout(timer[k + "v"]);
+      const testo = campi[k].via.input.value.trim();
+      if (testo.length < 3 || !stato[k].citta) return;
+      timer[k + "v"] = setTimeout(async () => {
+        try {
+          const vie = await cercaVia(testo, stato[k].citta.nome);
+          if (campi[k].via.input.value.trim() !== testo || !vie.length) return;
+          mostraSuggerimenti(k, "via", vie.map((v) => ({ label: v.etichetta, luogo: v })), (v) => {
+            stato[k].via = v;
+            campi[k].via.input.value = testo;
+          });
+        } catch { /* niente suggerimenti */ }
+      }, 900);
+    });
   }
+  // Il calendario si chiude appena si sceglie una data.
+  giorno.input.addEventListener("change", () => giorno.input.blur());
 
   /** Lista per scegliere tra più luoghi: il primo è preselezionato, la scelta vale solo se la cambi. */
   function scegliTra(wrap, luoghi, etichetta, onChange) {
