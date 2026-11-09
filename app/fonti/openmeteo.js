@@ -92,3 +92,27 @@ export async function giorniCitta(lat, lon, giorni) {
   }
   return { dati, ens };
 }
+
+/** Tutti i luoghi trovati per un nome, di qualsiasi paese (fino a 10), senza doppioni esatti. */
+export async function cercaLuoghi(nome) {
+  const q = new URLSearchParams({ name: nome, count: "10", language: "it", format: "json" });
+  const dati = await scaricaJSON(URL_GEOCODIFICA + q);
+  const visti = new Set();
+  const luoghi = [];
+  for (const r of dati.results || []) {
+    const chiave = `${r.name}|${r.admin1 || ""}|${r.country_code || ""}`;
+    if (visti.has(chiave)) continue;
+    visti.add(chiave);
+    luoghi.push({
+      etichetta: [r.name, r.admin1, r.country].filter(Boolean).join(", "),
+      nome: r.name,
+      regione: r.admin1 || "",
+      paese: r.country || "",
+      codice_paese: r.country_code || "",
+      lat: r.latitude,
+      lon: r.longitude,
+      fuso: r.timezone || null,
+    });
+  }
+  return luoghi;
+}

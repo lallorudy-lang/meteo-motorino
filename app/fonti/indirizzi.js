@@ -10,15 +10,21 @@ let ultima = 0;
 const attesa = (ms) => new Promise((r) => setTimeout(r, ms));
 
 /** Cerca una via in una città. Restituisce al massimo 5 luoghi distinti. */
-export function cercaVia(via, citta, { attesaMs = INTERVALLO_MS } = {}) {
-  const q = new URLSearchParams({ format: "jsonv2", countrycode: "it", limit: "5", street: via, city: citta });
+/** Richiesta a Nominatim in fila, con la pausa tra una richiesta e l'altra. */
+export function richiestaNominatim(url, attesaMs = INTERVALLO_MS) {
   const lavoro = coda.then(async () => {
     const mancano = ultima + attesaMs - Date.now();
     if (mancano > 0) await attesa(mancano);
     ultima = Date.now();
-    return scaricaJSON(URL_NOMINATIM + q);
+    return scaricaJSON(url);
   });
   coda = lavoro.catch(() => {});
+  return lavoro;
+}
+
+export function cercaVia(via, citta, { attesaMs = INTERVALLO_MS } = {}) {
+  const q = new URLSearchParams({ format: "jsonv2", countrycode: "it", limit: "5", street: via, city: citta });
+  const lavoro = richiestaNominatim(URL_NOMINATIM + q, attesaMs);
   return lavoro.then((risultati) => {
     const visti = new Set();
     const vie = [];

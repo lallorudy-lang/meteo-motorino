@@ -1,5 +1,6 @@
 // Scheda Più giorni: previsione giorno per giorno per una città, fino a 16 giorni.
-import { cercaLuogo as cercaLuogoVero, giorniCitta as giorniCittaVero } from "../fonti/openmeteo.js";
+import { giorniCitta as giorniCittaVero } from "../fonti/openmeteo.js";
+import { cercaCitta } from "../fonti/citta.js";
 import { analizzaGiorni, mm } from "../motore.js";
 import { disegnaBarre } from "./barre.js";
 
@@ -54,7 +55,7 @@ function oggiLocale(fuso = "Europe/Rome") {
 }
 
 /** Monta la scheda Più giorni dentro `contenitore`. */
-export function montaGiorni(contenitore, { cerca = cercaLuogoVero, fonti = { giorniCitta: giorniCittaVero } } = {}) {
+export function montaGiorni(contenitore, { cerca = cercaCitta, fonti = { giorniCitta: giorniCittaVero } } = {}) {
   contenitore.replaceChildren();
   const oggi = oggiLocale();
   const form = el("form", undefined, "partenza-form");
@@ -93,7 +94,8 @@ export function montaGiorni(contenitore, { cerca = cercaLuogoVero, fonti = { gio
       if (!scelto) {
         const trovati = await cerca(cittaInput.value.trim());
         if (!trovati.length) throw new Error(`Località non trovata: ${cittaInput.value.trim()}`);
-        const italiani = trovati.filter((l) => l.codice_paese === trovati[0].codice_paese);
+        const esatti = trovati.filter((l) => l.nome.toLowerCase() === cittaInput.value.trim().toLowerCase());
+        const italiani = esatti.length ? esatti : trovati;
         if (italiani.length > 1) {
           const lista = el("select", undefined, "omonimi");
           lista.setAttribute("aria-label", "Quale città?");

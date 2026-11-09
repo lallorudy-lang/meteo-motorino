@@ -1,6 +1,7 @@
 // Scheda Partenza: quando conviene partire per il viaggio da A a B.
 // calcolaPartenza è pura rispetto alla rete: riceve le fonti come parametro (si testa senza browser).
-import { orarioPunto as orarioPuntoVero, cercaLuogo as cercaLuogoVero } from "../fonti/openmeteo.js";
+import { orarioPunto as orarioPuntoVero } from "../fonti/openmeteo.js";
+import { cercaCitta } from "../fonti/citta.js";
 import { percorsoStrada as percorsoStradaVero, puntiLungoPercorso } from "../fonti/percorso.js";
 import { conLimite } from "../rete.js";
 import {
@@ -155,7 +156,7 @@ function selectOre(id, valori, selezionato) {
   return s;
 }
 
-export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = cercaViaVera, fonti = { orarioPunto: orarioPuntoVero, percorso: percorsoStradaVero } } = {}) {
+export function montaPartenza(contenitore, { cerca = cercaCitta, cercaVia = cercaViaVera, fonti = { orarioPunto: orarioPuntoVero, percorso: percorsoStradaVero } } = {}) {
   contenitore.replaceChildren();
   const oggi = oraLocale("Europe/Rome").slice(0, 10);
   const form = el("form", undefined, "partenza-form");
@@ -252,7 +253,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
         try {
           const luoghi = await cerca(testo);
           if (campi[k].citta.input.value.trim() !== testo || !luoghi.length) return;
-          const italiani = luoghi.filter((l) => l.codice_paese === luoghi[0].codice_paese).slice(0, 5);
+          const italiani = luoghi.slice(0, 8);
           campi[k].via.wrap.hidden = false; // la via è disponibile anche senza scegliere il suggerimento
           mostraSuggerimenti(k, "citta", italiani.map((l) => ({ label: l.etichetta, luogo: l })), (l) => {
             stato[k].citta = l;
@@ -276,7 +277,7 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
         try {
           if (!stato[k].citta) {
             const trovate = await cerca(cittaScritta);
-            const italiane = trovate.filter((l) => l.codice_paese === trovate[0]?.codice_paese);
+            const italiane = trovate;
             if (!italiane.length) return;
             stato[k].citta = italiane[0];
           }
@@ -312,7 +313,9 @@ export function montaPartenza(contenitore, { cerca = cercaLuogoVero, cercaVia = 
     if (stato[k].citta) return { ok: stato[k].citta };
     const trovati = await cerca(testo);
     if (!trovati.length) throw new Error(`Città non trovata: ${testo}`);
-    const luoghi = trovati.filter((l) => l.codice_paese === trovati[0].codice_paese);
+    // Se il nome scritto corrisponde esattamente a più località, si fa scegliere; altrimenti la prima.
+    const esatti = trovati.filter((l) => l.nome.toLowerCase() === testo.toLowerCase());
+    const luoghi = esatti.length ? esatti : trovati;
     togliOmonimi(k);
     stato[k].citta = luoghi[0];
     campi[k].via.wrap.hidden = false; // ora si scrive la via
