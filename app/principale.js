@@ -3,6 +3,7 @@
 import { leggi, salva, togli, esporta, importa, cancellaDatiLocali } from "./preferiti.js";
 import { montaPartenza } from "./viste/partenza.js";
 import { montaGiorni } from "./viste/giorni.js";
+import { montaAdesso } from "./viste/adesso.js";
 
 const CHIAVE_PRIVACY = "meteo-motorino.privacy-letta";
 const archivio = globalThis.localStorage;
@@ -126,4 +127,5 @@ if ("serviceWorker" in navigator) {
 }
 montaPartenza(document.getElementById("contenuto-partenza"));
 montaGiorni(document.getElementById("contenuto-giorni"));
+montaAdesso(document.getElementById("contenuto-adesso"));
 apriScheda("partenza");
