@@ -1,11 +1,11 @@
-// Scheda Adesso: pioggia prevista nelle prossime 12 ore, nella città scelta.
+// Scheda Adesso: pioggia prevista nelle prossime 24 ore, nella città scelta.
 import { cercaCitta } from "../fonti/citta.js";
 import { orarioPunto as orarioPuntoVero } from "../fonti/openmeteo.js";
 import { orePuntoDaRisposte, valutaOra, mm } from "../motore.js";
 import { oraNelFuso } from "../freschezza.js";
 import { disegnaBarre } from "./barre.js";
 
-const ORE = 12;
+const ORE = 24;
 const fmt = (n) => String(n).padStart(2, "0");
 
 function giornoDopo(iso) {
@@ -14,7 +14,7 @@ function giornoDopo(iso) {
   return d.toISOString().slice(0, 10);
 }
 
-/** Dalle 12 ore a partire dall'ora attuale (ora piena in corso inclusa). Funzione pura. */
+/** Dalle 24 ore a partire dall'ora attuale (ora piena in corso inclusa). Funzione pura. */
 export function prossimeOre(oreOggi, oreDomani, adesso) {
   const base = Date.parse(`${adesso.giorno}T${fmt(adesso.ora)}:00:00Z`);
   const fine = base + ORE * 3600000;
@@ -28,7 +28,7 @@ export function prossimeOre(oreOggi, oreDomani, adesso) {
     .sort((a, b) => a.t - b.t);
 }
 
-/** Previsioni delle prossime 12 ore per un luogo, con l'ora locale del luogo. */
+/** Previsioni delle prossime 24 ore per un luogo, con l'ora locale del luogo. */
 export async function calcolaAdesso(luogo, fonti = { orarioPunto: orarioPuntoVero }, adessoMs = Date.now()) {
   const oggiGuess = oraNelFuso(adessoMs, luogo.fuso || "Europe/Rome").giorno;
   const r = await fonti.orarioPunto(luogo.lat, luogo.lon, oggiGuess);
@@ -106,10 +106,10 @@ function disegna(r, box) {
   const ora = r.ore.length ? r.ore[0] : null;
   box.append(el("h2", r.luogo.etichetta));
   if (!r.ore.length) {
-    box.append(el("p", "Nessun dato per le prossime 12 ore."));
+    box.append(el("p", `Nessun dato per le prossime ${ORE} ore.`));
     return;
   }
-  box.append(el("p", `Prossime 12 ore, dalle ${fmt(ora.ora)}:00 (ora locale del luogo).`, "nota"));
+  box.append(el("p", `Prossime ${ORE} ore, dalle ${fmt(ora.ora)}:00 (ora locale del luogo).`, "nota"));
   box.append(el("h3", "Pioggia (mm)"));
   const barreBox = el("div", undefined, "barre-ore-box");
   box.append(barreBox);
